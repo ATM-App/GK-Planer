@@ -327,6 +327,14 @@
                 listenToDate(state.date);
                 listenToSavedDays(); 
 
+                // Intentar auth silenciosamente (No mostrar error si falla)
+                try {
+                    auth = getAuth(app);
+                    await signInAnonymously(auth);
+                } catch(authErr) {
+                    console.warn("Auth silencioso ignorado por permisos.");
+                }
+
             } catch (error) {
                 console.error("Error conectando Firebase, pasando a Modo Local:", error);
                 isOfflineMode = true;
@@ -362,13 +370,7 @@
                     }
                     renderApp();
                 }, (error) => {
-                    // Si Firebase nos bloquea por permisos, cargamos localmente sin romper la app.
-                    if (error.message && error.message.includes('permissions')) {
-                        if(!window.permsAlertShown) {
-                            alert("⚠️ AVISO DE FIREBASE ⚠️\n\nTu base de datos de Firebase no permite lectura pública (Reglas de seguridad).\n\nNo te preocupes: La app ha activado el MODO LOCAL automáticamente y guardará todo en este dispositivo.\n\nPara guardarlo en la nube, cambia tus Reglas de Firestore a:\nallow read, write: if true;");
-                            window.permsAlertShown = true;
-                        }
-                    }
+                    // Fallo silencioso, activamos el modo local sin molestar al usuario
                     isOfflineMode = true;
                     loadFromLocalStorage(dateStr);
                 });
@@ -396,17 +398,17 @@
 
             // 2. Intentar guardar en Firebase
             if (!db || isOfflineMode) {
-                if (manual) window.showToast('Guardado en el dispositivo', 'success');
+                if (manual) window.showToast('Guardado', 'success');
                 return;
             }
             
             const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'assignments', state.date);
             try {
                 await setDoc(docRef, dataToSave);
-                if (manual) window.showToast('Planificación guardada (Nube + Local)');
+                if (manual) window.showToast('Planificación guardada');
             } catch (e) {
                 isOfflineMode = true;
-                if (manual) window.showToast("Guardado en tu dispositivo", "success");
+                if (manual) window.showToast("Guardado", "success");
             }
         }
 
