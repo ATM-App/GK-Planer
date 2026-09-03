@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atleti GK | Asignación de Espacios</title>
+    <title>ATM GK Planer | Asignación de Espacios</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome -->
@@ -11,9 +11,10 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     
-    <!-- Metadatos PWA -->
+    <!-- Metadatos PWA y Favicon -->
     <meta name="theme-color" content="#CB3524">
-    <link rel="apple-touch-icon" href="GK-Planer.PNG">
+    <link rel="apple-touch-icon" href="GK-Planer.png">
+    <link rel="icon" type="image/png" href="GK-Planer.png">
 
     <script>
         tailwind.config = {
@@ -83,7 +84,7 @@
                 <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-full -mr-10 -mt-10"></div>
                 <div class="absolute bottom-0 left-0 w-24 h-24 bg-atleti-red opacity-20 rounded-full -ml-10 -mb-10"></div>
                 
-                <img src="GK-Planer.PNG" alt="GK Planer Icon" class="w-24 h-24 rounded-2xl shadow-[0_10px_25px_rgba(0,0,0,0.5)] mb-5 object-cover bg-white relative z-10 border-2 border-white/20" onerror="this.src='ESCUDO ATM.PNG'">
+                <img src="GK-Planer.png" alt="GK Planer Icon" class="w-24 h-24 rounded-2xl shadow-[0_10px_25px_rgba(0,0,0,0.5)] mb-5 object-cover bg-white relative z-10 border-2 border-white/20" onerror="this.src='ESCUDO%20ATM.png'">
                 
                 <h2 class="text-2xl font-bold text-white mb-1 relative z-10">GK Planer</h2>
                 <p class="text-blue-200 text-xs font-semibold tracking-widest uppercase relative z-10">ATM GK Planer</p>
@@ -118,8 +119,6 @@
             </div>
             
             <div class="flex items-center space-x-4">
-                <!-- Indicador de conexión eliminado de aquí -->
-                
                 <!-- Selector de Fecha Clásico (Oculto visualmente, accionado por icono) -->
                 <div class="relative cursor-pointer group flex items-center justify-center w-8 h-8 rounded-full hover:bg-white/20 transition-colors">
                     <i class="fa-regular fa-calendar-alt text-lg"></i>
@@ -128,7 +127,7 @@
             </div>
         </div>
         
-        <!-- NUEVO: Carrusel de Fechas Rápido -->
+        <!-- Carrusel de Fechas Rápido -->
         <div class="bg-slate-900 border-t border-slate-700/50 h-14 flex items-center px-4 overflow-x-auto no-scrollbar shadow-inner" id="date-carousel">
             <!-- Los botones de fecha se inyectan aquí vía JS -->
         </div>
@@ -166,7 +165,7 @@
                 </div>
             </div>
 
-            <!-- NUEVO: Añadir Campo Extra -->
+            <!-- Añadir Campo Extra -->
             <div class="p-4 border-b border-slate-200 bg-slate-50 flex-shrink-0">
                 <h2 class="font-bold text-atleti-blue text-xs uppercase tracking-wide mb-2"><i class="fa-solid fa-plus mr-2"></i>Añadir Campo (F7 / Extra)</h2>
                 <div class="flex space-x-2">
@@ -197,7 +196,7 @@
             <div class="h-14 border-b border-slate-700 flex items-center px-6 justify-between bg-slate-900 shadow-sm z-10">
                 <h3 class="text-lg font-semibold text-white" id="display-date">Entrenamiento del Día</h3>
                 
-                <!-- Selector de Horarios tipo Pestañas ACTUALIZADOS -->
+                <!-- Selector de Horarios tipo Pestañas -->
                 <div class="flex space-x-1 bg-slate-800 p-1 rounded-lg border border-slate-700" id="time-tabs">
                     <button onclick="window.setTimeSlot('s1')" id="tab-s1" class="px-5 py-1.5 text-sm font-semibold rounded bg-atleti-red text-white shadow-sm transition-all">
                         <i class="fa-regular fa-clock mr-1"></i> 17:45 - 19:15
@@ -235,13 +234,13 @@
             { id: 't4', name: 'Alevín A', icon: 'fa-person' }
         ];
 
-        // Solo Campos 3 y 4 (Eliminado el campo pequeño extra)
+        // Solo Campos 3 y 4
         const FIELDS = [
             { id: 'c3', name: 'Campo 3' },
             { id: 'c4', name: 'Campo 4' }
         ];
 
-        // HORARIOS ACTUALIZADOS
+        // HORARIOS
         const TIME_SLOTS = [
             { id: 's1', time: '17:45 - 19:15' },
             { id: 's2', time: '19:15 - 20:45' }
@@ -252,8 +251,8 @@
             activeSlot: 's1',
             assignments: {},   
             gkAssignments: {},
-            customFields: [], // NUEVO: Array para guardar campos extra del día
-            savedDays: new Set() // Para almacenar qué días tienen datos
+            customFields: [],
+            savedDays: new Set()
         };
 
         let db, auth, appId;
@@ -269,7 +268,6 @@
                 let firebaseConfig;
                 let initToken = null;
 
-                // Detectamos el entorno: Vista previa temporal vs Producción (GitHub)
                 if (typeof __firebase_config !== 'undefined' && __firebase_config) {
                     firebaseConfig = JSON.parse(__firebase_config);
                     appId = typeof __app_id !== 'undefined' ? __app_id : 'atletigk-local-app';
@@ -306,7 +304,7 @@
 
             } catch (error) {
                 console.error("Error al conectar con Firebase:", error);
-                renderApp(); // Fallback por si falla la red
+                renderApp();
             }
         }
 
@@ -339,7 +337,6 @@
             if (!currentUser || !db) return;
             const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'assignments', state.date);
             
-            // Si está vacío, podríamos querer borrar el documento, pero por simplicidad guardamos vacío
             const hasData = Object.keys(state.assignments).length > 0 || Object.keys(state.gkAssignments || {}).length > 0 || (state.customFields && state.customFields.length > 0);
             
             try {
@@ -347,13 +344,13 @@
                     data: state.assignments,
                     gkData: state.gkAssignments || {},
                     customFields: state.customFields || [],
-                    hasData: hasData // Flag para búsquedas rápidas
+                    hasData: hasData 
                 });
                 
                 if (hasData) state.savedDays.add(state.date);
                 else state.savedDays.delete(state.date);
                 
-                renderDateCarousel(); // Refrescar indicadores
+                renderDateCarousel();
                 
                 if (manual) {
                     window.showToast('Planificación del día guardada con éxito');
@@ -364,9 +361,7 @@
             }
         }
 
-        // Escuchar cambios globales para marcar días en el carrusel
         function listenToSavedDays() {
-            // Simulación de precarga de la semana actual para ver indicadores (solo lectura de docs específicos)
             const today = new Date();
             for(let i = -7; i <= 7; i++) {
                 const d = new Date(today);
@@ -379,9 +374,9 @@
                         getDoc(docRef).then(snap => {
                             if(snap.exists() && snap.data().hasData) {
                                 state.savedDays.add(dStr);
-                                renderDateCarousel(); // Actualizar UI si se encuentra
+                                renderDateCarousel(); 
                             }
-                        }).catch(() => {}); // ignorar si no hay permisos o red
+                        }).catch(() => {}); 
                     });
                 }
             }
@@ -401,7 +396,7 @@
 
         function renderGrid() {
             const container = document.getElementById('fields-container');
-            container.innerHTML = ''; // Limpiamos para poder renderizar campos dinámicos correctamente
+            container.innerHTML = ''; 
 
             const allFields = [...FIELDS, ...(state.customFields || [])];
 
@@ -417,33 +412,21 @@
                         
                         <div class="relative w-full h-80 pitch-bg rounded-lg border-4 pitch-line shadow-[0_10px_30px_rgba(0,0,0,0.5)] flex">
                             
-                            <!-- Dibujo del campo (Líneas Blancas) -->
                             <div class="absolute inset-0 pointer-events-none opacity-80 z-0">
-                                <!-- Línea central -->
                                 <div class="absolute top-0 bottom-0 left-1/2 w-0 pitch-line border-l-2 -translate-x-1/2"></div>
-                                <!-- Círculo central -->
                                 <div class="absolute top-1/2 left-1/2 w-32 h-32 rounded-full pitch-line border-2 -translate-x-1/2 -translate-y-1/2"></div>
-                                <!-- Punto central -->
                                 <div class="absolute top-1/2 left-1/2 w-2 h-2 rounded-full bg-white -translate-x-1/2 -translate-y-1/2"></div>
                                 
-                                <!-- Área Grande Izquierda -->
                                 <div class="absolute top-1/2 left-0 w-32 h-44 pitch-line border-2 border-l-0 -translate-y-1/2"></div>
-                                <!-- Área Pequeña Izquierda -->
                                 <div class="absolute top-1/2 left-0 w-12 h-20 pitch-line border-2 border-l-0 -translate-y-1/2"></div>
-                                <!-- Semicírculo Izquierdo -->
                                 <div class="absolute top-1/2 left-32 w-12 h-24 pitch-line border-2 border-l-0 rounded-r-full -translate-y-1/2"></div>
                                 
-                                <!-- Área Grande Derecha -->
                             <div class="absolute top-1/2 right-0 w-32 h-44 pitch-line border-2 border-r-0 -translate-y-1/2"></div>
-                            <!-- Área Pequeña Derecha -->
                             <div class="absolute top-1/2 right-0 w-12 h-20 pitch-line border-2 border-r-0 -translate-y-1/2"></div>
-                            <!-- Semicírculo Derecho -->
                             <div class="absolute top-1/2 right-32 w-12 h-24 pitch-line border-2 border-r-0 rounded-l-full -translate-y-1/2"></div>
                         </div>
 
-                        <!-- Zonas Interactivas (Mitad Izquierda / Derecha) -->
                         <div class="w-1/2 h-full relative z-10 p-4 flex flex-col justify-center items-end" id="${field.id}-izq-container">
-                            <!-- Contenedor Específico para la Zona GK Izquierda (Área Grande) -->
                             <div id="${field.id}-izq-gk-zone" class="absolute left-0 top-1/2 -translate-y-1/2 w-40 h-52 rounded-r-xl border-2 border-dashed border-transparent transition-all flex items-center justify-center overflow-hidden z-20 hidden">
                             </div>
                             
@@ -457,7 +440,6 @@
                             </div>
                         </div>
                         <div class="w-1/2 h-full relative z-10 p-4 flex flex-col justify-center items-start" id="${field.id}-der-container">
-                            <!-- Contenedor Específico para la Zona GK Derecha (Área Grande) -->
                             <div id="${field.id}-der-gk-zone" class="absolute right-0 top-1/2 -translate-y-1/2 w-40 h-52 rounded-l-xl border-2 border-dashed border-transparent transition-all flex items-center justify-center overflow-hidden z-20 hidden">
                             </div>
                             
@@ -481,7 +463,6 @@
             const unassignedContainer = document.getElementById('unassigned-teams');
             unassignedContainer.innerHTML = '';
             
-            // 1. Limpiar visualmente
             document.querySelectorAll('.pitch-bg div[id]').forEach(zone => {
                 const teamCards = zone.querySelectorAll('.team-card-on-pitch');
                 teamCards.forEach(card => card.remove());
@@ -492,7 +473,6 @@
                 zone.classList.remove('border-white/50', 'bg-black/30');
             });
             
-            // Limpiar zonas GK
             document.querySelectorAll('div[id$="-gk-zone"]').forEach(zone => {
                 zone.classList.add('hidden');
                 zone.classList.remove('ring-4', 'ring-atleti-red', 'ring-inset', 'bg-atleti-red/20');
@@ -501,7 +481,6 @@
 
             let unassignedCount = 0;
 
-            // 2. Colocar Equipos
             TEAMS.forEach(team => {
                 const card = document.createElement('div');
                 card.id = `team-${team.id}`;
@@ -524,7 +503,7 @@
                         card.className = `team-card-on-pitch w-full max-w-[200px] p-4 rounded-xl border border-white/30 bg-atleti-blue/95 text-white shadow-[0_8px_15px_rgba(0,0,0,0.4)] backdrop-blur-sm flex flex-col items-center justify-center transform hover:scale-105 cursor-grab z-20 absolute`;
                         card.innerHTML = `
                             <div class="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center mb-2 shadow-inner p-1.5 border border-white/10">
-                                <img src="ESCUDO ATM.PNG" alt="Atleti" class="w-full h-full object-contain drop-shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                <img src="ESCUDO%20ATM.png" alt="Atleti" class="w-full h-full object-contain drop-shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                                 <i class="fa-solid fa-shield hidden text-2xl drop-shadow-md"></i>
                             </div>
                             <p class="font-bold text-base text-center leading-tight drop-shadow-md tracking-wide">${team.name}</p>
@@ -541,7 +520,7 @@
                     card.innerHTML = `
                         <div class="flex items-center space-x-3 pointer-events-none">
                             <div class="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center group-hover:bg-red-50 transition-colors p-1.5">
-                                <img src="ESCUDO ATM.PNG" alt="Atleti" class="w-full h-full object-contain drop-shadow-sm" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                <img src="ESCUDO%20ATM.png" alt="Atleti" class="w-full h-full object-contain drop-shadow-sm" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                                 <i class="fa-solid fa-shield hidden text-atleti-blue"></i>
                             </div>
                             <p class="font-bold text-sm leading-tight">${team.name}</p>
@@ -553,7 +532,6 @@
                 }
             });
 
-            // 3. Renderizar Zonas GK
             if (state.gkAssignments) {
                 Object.keys(state.gkAssignments).forEach(key => {
                     if (key.endsWith(`-${state.activeSlot}`) && state.gkAssignments[key]) {
@@ -689,7 +667,6 @@
             
             let teamIndex = dayOfYear % TEAMS.length;
             
-            // Combinar campos base con campos extra creados
             const allFields = [...FIELDS, ...(state.customFields || [])];
             const ALL_SPACES = [];
             allFields.forEach(f => {
@@ -740,7 +717,6 @@
             if (!state.customFields) return;
             state.customFields = state.customFields.filter(f => f.id !== id);
             
-            // Limpiar las asignaciones de ese campo borrado
             for (let key in state.assignments) {
                 if (key.startsWith(id)) delete state.assignments[key];
             }
@@ -773,16 +749,14 @@
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             const dateObj = new Date(state.date);
             document.getElementById('display-date').innerText = "Planificación: " + dateObj.toLocaleDateString('es-ES', options);
-            renderDateCarousel(); // Asegurar que el carrusel refleja la fecha activa
+            renderDateCarousel();
         }
 
-        // NUEVO: Lógica del Carrusel de Fechas
         function renderDateCarousel() {
             const carousel = document.getElementById('date-carousel');
             carousel.innerHTML = '';
             
             const activeDate = new Date(state.date);
-            // Mostrar 15 días centrados en la fecha activa
             
             const startDate = new Date(activeDate);
             startDate.setDate(activeDate.getDate() - 7);
@@ -800,8 +774,7 @@
                 const isToday = dateStr === todayStr;
                 const hasData = state.savedDays.has(dateStr);
 
-                // Formateo del texto
-                let dateText = esFormatter.format(iterDate).replace('.', ''); // Ej: "lun, 2 oct"
+                let dateText = esFormatter.format(iterDate).replace('.', ''); 
                 dateText = dateText.charAt(0).toUpperCase() + dateText.slice(1);
                 if (isToday) dateText = "Hoy";
 
@@ -817,7 +790,6 @@
                     updateDisplayDateUI();
                     listenToDate(state.date);
                     
-                    // Centrar el scroll en el botón pulsado
                     btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
                 };
 
@@ -829,7 +801,6 @@
                 btn.innerHTML = `<span>${dateText}</span> ${indicator}`;
                 carousel.appendChild(btn);
                 
-                // Centrar inicialmente el elemento seleccionado
                 if (isSelected) {
                     setTimeout(() => btn.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'center' }), 50);
                 }
@@ -841,7 +812,7 @@
         updateDisplayDateUI();
 
         dateInput.addEventListener('change', (e) => {
-            if(!e.target.value) return; // Prevenir vacíos
+            if(!e.target.value) return; 
             state.date = e.target.value;
             updateDisplayDateUI();
             listenToDate(state.date); 
@@ -851,7 +822,6 @@
         // PWA & INSTALACIÓN (AUTO-GENERADO)
         // ==========================================
         
-        // 1. Inyectar Manifest dinámicamente para que funcione en un solo archivo
         const manifest = {
             "name": "ATM GK Planer",
             "short_name": "GK Planer",
@@ -861,13 +831,13 @@
             "theme_color": "#CB3524",
             "icons": [
                 {
-                    "src": "GK-Planer.PNG",
+                    "src": "GK-Planer.png",
                     "sizes": "192x192",
                     "type": "image/png",
                     "purpose": "any maskable"
                 },
                 {
-                    "src": "GK-Planer.PNG",
+                    "src": "GK-Planer.png",
                     "sizes": "512x512",
                     "type": "image/png",
                     "purpose": "any maskable"
@@ -877,7 +847,6 @@
         const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
         document.querySelector('head').insertAdjacentHTML('beforeend', `<link rel="manifest" href="${URL.createObjectURL(manifestBlob)}">`);
 
-        // 2. Registrar Service Worker Básico (Requisito para que salte el instalador)
         const swCode = `
             self.addEventListener('install', (e) => { self.skipWaiting(); });
             self.addEventListener('activate', (e) => { e.waitUntil(clients.claim()); });
@@ -888,23 +857,17 @@
             navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(err => console.log("SW Registro:", err));
         }
 
-        // 3. Lógica del Modal de Instalación
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
-            // Prevenir la barra por defecto de Android/Chrome
             e.preventDefault();
-            // Guardar el evento para lanzarlo cuando el usuario haga clic en nuestro botón
             deferredPrompt = e;
-            // Mostrar nuestro modal personalizado
             document.getElementById('install-modal').classList.remove('hidden');
             document.getElementById('install-modal').classList.add('flex');
         });
 
         window.installPWA = async () => {
             if (deferredPrompt) {
-                // Lanzar el aviso de instalación nativo
                 deferredPrompt.prompt();
-                // Esperar respuesta del usuario
                 const { outcome } = await deferredPrompt.userChoice;
                 if (outcome === 'accepted') {
                     console.log('App instalada con éxito');
@@ -919,7 +882,6 @@
             document.getElementById('install-modal').classList.remove('flex');
         };
 
-        // Iniciar Firebase al final
         initFirebase();
 
     </script>
