@@ -116,30 +116,31 @@
         </div>
     </div>
 
+    <!-- CABECERA OPTIMIZADA PARA MÓVIL (ICONO CALENDARIO SIEMPRE VISIBLE) -->
     <header class="bg-atleti-red text-white shadow-md z-20 relative shrink-0">
-        <div class="max-w-screen-2xl mx-auto px-4 h-14 md:h-16 flex items-center justify-between">
-            <div class="flex items-center space-x-2 md:space-x-3">
+        <div class="max-w-screen-2xl mx-auto px-3 md:px-4 h-14 md:h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-2 md:space-x-3 overflow-hidden w-full">
                 <!-- ESCUDO EN LA CABECERA -->
-                <div class="w-8 h-8 md:w-10 md:h-10 bg-white rounded-full flex items-center justify-center p-1 border-2 border-white/80 shadow-md">
+                <div class="w-8 h-8 md:w-10 md:h-10 bg-white rounded-full flex items-center justify-center p-0.5 md:p-1 border-2 border-white/80 shadow-md shrink-0">
                     <img src="ESCUDO%20ATM.png" alt="ATM Logo" class="w-full h-full object-contain" onerror="this.src='https://upload.wikimedia.org/wikipedia/en/f/f4/Atletico_Madrid_2017_logo.svg'">
                 </div>
-                <div>
-                    <h1 class="text-lg md:text-xl font-bold tracking-wide">ATM GK Planer</h1>
-                    <p class="hidden md:block text-xs text-red-100">Áreas de Trabajo Específico</p>
+                <div class="truncate flex-1">
+                    <h1 class="text-base md:text-xl font-bold tracking-wide truncate">ATM GK Planer</h1>
+                    <p class="hidden md:block text-xs text-red-100 truncate">Áreas de Trabajo Específico</p>
                 </div>
             </div>
             
-            <div class="flex items-center space-x-4">
-                <!-- Selector de Fecha Clásico -->
-                <div class="relative cursor-pointer group flex items-center justify-center w-8 h-8 rounded-full hover:bg-white/20 transition-colors">
-                    <i class="fa-regular fa-calendar-alt text-lg"></i>
+            <div class="flex items-center shrink-0 ml-2">
+                <!-- Selector de Fecha Clásico (Vuelve a ser visible como botón nativo) -->
+                <div class="relative cursor-pointer flex items-center justify-center w-9 h-9 md:w-10 md:h-10 rounded-full bg-white/20 hover:bg-white/30 transition-colors shadow-sm border border-white/10">
+                    <i class="fa-regular fa-calendar-alt text-base md:text-lg"></i>
                     <input type="date" id="current-date" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" title="Seleccionar fecha específica" />
                 </div>
             </div>
         </div>
         
         <!-- Carrusel de Fechas Rápido -->
-        <div class="bg-slate-900 border-t border-slate-700/50 h-12 md:h-14 flex items-center px-4 overflow-x-auto no-scrollbar shadow-inner" id="date-carousel">
+        <div class="bg-slate-900 border-t border-slate-700/50 h-12 md:h-14 flex items-center px-2 md:px-4 overflow-x-auto no-scrollbar shadow-inner" id="date-carousel">
             <!-- Los botones de fecha se inyectan aquí vía JS -->
         </div>
     </header>
@@ -220,9 +221,9 @@
             <!-- Contenedor Visual de Campos -->
             <div class="flex-1 overflow-y-auto overflow-x-hidden p-3 md:p-8 no-scrollbar flex flex-col items-center space-y-6 md:space-y-10 relative pb-20" id="fields-container"></div>
 
-            <!-- Notificación (Z-index altísimo para que no se oculte) -->
+            <!-- Notificación -->
             <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 md:translate-x-0 md:left-auto md:right-6 bg-slate-800 text-white px-4 py-3 rounded-lg shadow-2xl transform transition-transform translate-y-24 opacity-0 flex items-center space-x-3 pointer-events-none z-[999999] w-[90%] md:w-auto max-w-sm">
-                <i class="fa-solid fa-circle-check text-green-400"></i>
+                <i class="fa-solid fa-circle-check text-green-400" id="toast-icon"></i>
                 <span id="toast-message" class="text-xs md:text-sm font-medium">Guardado correctamente</span>
             </div>
         </section>
@@ -232,7 +233,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // ==========================================
         // CONFIGURACIÓN Y DATOS BASE
@@ -265,10 +266,40 @@
 
         let db, auth, appId;
         let unsubscribeSnapshot = null;
-        // currentUser ya no bloqueará el guardado debido a restricciones de dominio
+        let isOfflineMode = false;
 
         // ==========================================
-        // INICIALIZACIÓN DE FIREBASE (PERSISTENCIA)
+        // MANEJO DE DATOS LOCALES (FALLBACK)
+        // ==========================================
+        function saveToLocalStorage(dateStr, data) {
+            try {
+                localStorage.setItem(`atm_gk_${dateStr}`, JSON.stringify(data));
+            } catch(e) { console.warn("LocalStorage no disponible"); }
+        }
+
+        function loadFromLocalStorage(dateStr) {
+            try {
+                const localData = localStorage.getItem(`atm_gk_${dateStr}`);
+                if (localData) {
+                    const parsed = JSON.parse(localData);
+                    state.assignments = parsed.data || {};
+                    state.gkAssignments = parsed.gkData || {};
+                    state.customFields = parsed.customFields || [];
+                } else {
+                    state.assignments = {};
+                    state.gkAssignments = {};
+                    state.customFields = [];
+                }
+            } catch(e) {
+                state.assignments = {};
+                state.gkAssignments = {};
+                state.customFields = [];
+            }
+            renderApp();
+        }
+
+        // ==========================================
+        // INICIALIZACIÓN DE FIREBASE E HÍBRIDO
         // ==========================================
         async function initFirebase() {
             try {
@@ -292,83 +323,109 @@
                 const app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
 
-                // Forzamos la lectura inmediata (Firestore Test Mode lo permite)
+                // Arrancamos escuchadores
                 listenToDate(state.date);
                 listenToSavedDays(); 
 
-                // Intentar auth en segundo plano, si falla por dominio, no pasa nada, db sigue funcionando.
-                try {
-                    auth = getAuth(app);
-                    await signInAnonymously(auth);
-                } catch(authErr) {
-                    console.warn("Aviso: Auth bloqueado por restricción de dominio. Usando Firestore directo en Modo Prueba.");
-                }
-
             } catch (error) {
-                console.error("Error general al conectar con Firebase:", error);
-                renderApp();
+                console.error("Error conectando Firebase, pasando a Modo Local:", error);
+                isOfflineMode = true;
+                loadFromLocalStorage(state.date);
+                listenToSavedDays(); 
             }
         }
 
         // ==========================================
-        // LECTURA / ESCRITURA EN FIRESTORE
+        // LECTURA / ESCRITURA (NUBE + LOCAL)
         // ==========================================
         function listenToDate(dateStr) {
-            if (!db) return;
+            if (!db || isOfflineMode) {
+                loadFromLocalStorage(dateStr);
+                return;
+            }
             if (unsubscribeSnapshot) unsubscribeSnapshot();
 
             const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'assignments', dateStr);
             
-            unsubscribeSnapshot = onSnapshot(docRef, (docSnap) => {
-                if (docSnap.exists()) {
-                    state.assignments = docSnap.data().data || {};
-                    state.gkAssignments = docSnap.data().gkData || {};
-                    state.customFields = docSnap.data().customFields || [];
-                } else {
-                    state.assignments = {};
-                    state.gkAssignments = {};
-                    state.customFields = [];
-                }
-                renderApp();
-            }, (error) => {
-                console.warn("Error leyendo de Firebase (Probablemente por permisos temporales), mostrando datos locales.");
-                renderApp(); 
-            });
+            try {
+                unsubscribeSnapshot = onSnapshot(docRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        state.assignments = docSnap.data().data || {};
+                        state.gkAssignments = docSnap.data().gkData || {};
+                        state.customFields = docSnap.data().customFields || [];
+                        // Sincronizar local por si acaso
+                        saveToLocalStorage(dateStr, docSnap.data());
+                    } else {
+                        state.assignments = {};
+                        state.gkAssignments = {};
+                        state.customFields = [];
+                    }
+                    renderApp();
+                }, (error) => {
+                    // Si Firebase nos bloquea por permisos, cargamos localmente sin romper la app.
+                    if (error.message && error.message.includes('permissions')) {
+                        if(!window.permsAlertShown) {
+                            alert("⚠️ AVISO DE FIREBASE ⚠️\n\nTu base de datos de Firebase no permite lectura pública (Reglas de seguridad).\n\nNo te preocupes: La app ha activado el MODO LOCAL automáticamente y guardará todo en este dispositivo.\n\nPara guardarlo en la nube, cambia tus Reglas de Firestore a:\nallow read, write: if true;");
+                            window.permsAlertShown = true;
+                        }
+                    }
+                    isOfflineMode = true;
+                    loadFromLocalStorage(dateStr);
+                });
+            } catch(e) {
+                isOfflineMode = true;
+                loadFromLocalStorage(dateStr);
+            }
         }
 
         async function saveAssignments(manual = false) {
-            if (!db) {
-                if (manual) window.showToast('No se puede guardar: Comprueba conexión', 'error');
+            const hasData = Object.keys(state.assignments).length > 0 || Object.keys(state.gkAssignments || {}).length > 0 || (state.customFields && state.customFields.length > 0);
+            const dataToSave = { 
+                data: state.assignments,
+                gkData: state.gkAssignments || {},
+                customFields: state.customFields || [],
+                hasData: hasData 
+            };
+
+            // 1. Siempre guardar en local storage (Seguridad máxima)
+            saveToLocalStorage(state.date, dataToSave);
+            
+            if (hasData) state.savedDays.add(state.date);
+            else state.savedDays.delete(state.date);
+            renderDateCarousel();
+
+            // 2. Intentar guardar en Firebase
+            if (!db || isOfflineMode) {
+                if (manual) window.showToast('Guardado en el dispositivo', 'success');
                 return;
             }
             
             const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'assignments', state.date);
-            const hasData = Object.keys(state.assignments).length > 0 || Object.keys(state.gkAssignments || {}).length > 0 || (state.customFields && state.customFields.length > 0);
-            
             try {
-                await setDoc(docRef, { 
-                    data: state.assignments,
-                    gkData: state.gkAssignments || {},
-                    customFields: state.customFields || [],
-                    hasData: hasData 
-                });
-                
-                if (hasData) state.savedDays.add(state.date);
-                else state.savedDays.delete(state.date);
-                
-                renderDateCarousel();
-                
-                if (manual) {
-                    window.showToast('Planificación guardada con éxito');
-                }
+                await setDoc(docRef, dataToSave);
+                if (manual) window.showToast('Planificación guardada (Nube + Local)');
             } catch (e) {
-                console.error("Error al guardar en BD:", e);
-                window.showToast("Planificación guardada en local (Error BD)", "error");
+                isOfflineMode = true;
+                if (manual) window.showToast("Guardado en tu dispositivo", "success");
             }
         }
 
         function listenToSavedDays() {
-            if (!db) return;
+            // Cargar días desde localStorage primero
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('atm_gk_')) {
+                    const dStr = key.replace('atm_gk_', '');
+                    try {
+                        const localData = JSON.parse(localStorage.getItem(key));
+                        if (localData && localData.hasData) state.savedDays.add(dStr);
+                    } catch(e) {}
+                }
+            }
+            renderDateCarousel();
+
+            // Sincronizar con Firebase si es posible
+            if (!db || isOfflineMode) return;
             const today = new Date();
             for(let i = -7; i <= 7; i++) {
                 const d = new Date(today);
@@ -377,14 +434,12 @@
                 
                 if(dStr !== state.date) { 
                     const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'assignments', dStr);
-                    import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js").then(({ getDoc }) => {
-                        getDoc(docRef).then(snap => {
-                            if(snap.exists() && snap.data().hasData) {
-                                state.savedDays.add(dStr);
-                                renderDateCarousel(); 
-                            }
-                        }).catch(() => {}); 
-                    });
+                    getDoc(docRef).then(snap => {
+                        if(snap.exists() && snap.data().hasData) {
+                            state.savedDays.add(dStr);
+                            renderDateCarousel(); 
+                        }
+                    }).catch(() => {}); // Fallo silencioso, ya lo tenemos local
                 }
             }
         }
@@ -559,7 +614,6 @@
 
             document.getElementById('unassigned-count').innerText = unassignedCount;
             
-            // Asignar listeners táctiles forzando passive:false tras renderizar
             window.attachTouchListeners();
         }
 
@@ -704,20 +758,24 @@
             const touch = ev.touches[0];
             const rect = target.getBoundingClientRect();
             
-            // Calculamos exactamente dónde tocó el dedo dentro del elemento
             window.touchOffsetX = touch.clientX - rect.left;
             window.touchOffsetY = touch.clientY - rect.top;
             
             window.ghostEl = target.cloneNode(true);
-            window.ghostEl.style.position = 'fixed';
-            window.ghostEl.style.zIndex = '999999';
-            window.ghostEl.style.opacity = '0.9';
-            window.ghostEl.style.pointerEvents = 'none'; 
-            window.ghostEl.style.width = target.offsetWidth + 'px';
-            window.ghostEl.style.height = target.offsetHeight + 'px';
-            window.ghostEl.style.margin = '0';
-            window.ghostEl.style.left = '0px'; 
-            window.ghostEl.style.top = '0px';
+            
+            window.ghostEl.classList.remove('absolute', 'relative', 'transform', 'hover:scale-105');
+            
+            window.ghostEl.style.setProperty('position', 'fixed', 'important');
+            window.ghostEl.style.setProperty('z-index', '999999', 'important');
+            window.ghostEl.style.setProperty('opacity', '0.85', 'important');
+            window.ghostEl.style.setProperty('pointer-events', 'none', 'important'); 
+            window.ghostEl.style.setProperty('width', rect.width + 'px', 'important');
+            window.ghostEl.style.setProperty('height', rect.height + 'px', 'important');
+            window.ghostEl.style.setProperty('margin', '0', 'important');
+            window.ghostEl.style.setProperty('left', '0px', 'important'); 
+            window.ghostEl.style.setProperty('top', '0px', 'important');
+            window.ghostEl.style.setProperty('transform-origin', 'top left', 'important');
+
             document.body.appendChild(window.ghostEl);
 
             window.moveGhost(touch.clientX, touch.clientY);
@@ -725,7 +783,7 @@
 
         window.handleTouchMove = (ev) => {
             if (!window.ghostEl) return;
-            if (ev.cancelable) ev.preventDefault(); // Bloquear scroll en móvil
+            if (ev.cancelable) ev.preventDefault(); 
             
             const touch = ev.touches[0];
             window.moveGhost(touch.clientX, touch.clientY);
@@ -785,7 +843,6 @@
 
         window.moveGhost = (x, y) => {
             if (!window.ghostEl) return;
-            // Usa el Offset exacto para que el elemento NO salte, se queda bajo el dedo
             const posX = x - window.touchOffsetX;
             const posY = y - window.touchOffsetY;
             window.ghostEl.style.transform = `translate3d(${posX}px, ${posY}px, 0)`;
@@ -866,7 +923,7 @@
         window.showToast = (msg, type = 'success') => {
             const toast = document.getElementById('toast');
             const msgEl = document.getElementById('toast-message');
-            const icon = toast.querySelector('i');
+            const icon = document.getElementById('toast-icon');
             
             msgEl.innerText = msg;
             icon.className = type === 'error' 
@@ -951,10 +1008,8 @@
         });
 
         // ==========================================
-        // PWA (SOLUCIONADO PARA GITHUB PAGES)
+        // PWA E INSTALACIÓN 
         // ==========================================
-        // Se elimina el registro de Service Worker falso para evitar el error rojo de Blob en Github.
-        // La app indicará la instalación manual para garantizar el 100% de éxito en iPhone/Android.
         
         window.forceInstallModal = () => {
             document.getElementById('install-modal').classList.remove('hidden');
@@ -970,6 +1025,13 @@
             document.getElementById('install-modal').classList.add('hidden');
             document.getElementById('install-modal').classList.remove('flex');
         };
+
+        document.addEventListener("DOMContentLoaded", () => {
+            if (window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches) {
+                const btn = document.getElementById('install-app-btn');
+                if(btn) btn.style.display = 'none';
+            }
+        });
 
         initFirebase();
 
