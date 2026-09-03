@@ -71,6 +71,14 @@
             background-color: rgba(255, 255, 255, 0.15) !important;
             border: 2px dashed white !important;
         }
+
+        /* NUEVO: Ocultar botón de instalar si ya es PWA */
+        @media all and (display-mode: standalone) {
+            #install-app-btn { display: none !important; }
+        }
+        
+        /* NUEVO: Para prevenir scroll en móviles al intentar arrastrar */
+        .touch-draggable { touch-action: none; }
     </style>
 </head>
 <body class="h-screen flex flex-col font-sans overflow-hidden text-slate-800">
@@ -160,7 +168,7 @@
                 <h2 class="font-bold text-atleti-red text-xs uppercase tracking-wide mb-2"><i class="fa-solid fa-crosshairs mr-2"></i>Marcar Zona Porteros</h2>
                 <p class="text-[10px] text-slate-500 mb-3 leading-tight">Arrastra este marcador a cualquier área para indicar el trabajo específico.</p>
                 
-                <div draggable="true" ondragstart="window.handleGKDragStart(event)" class="p-2.5 rounded-lg border-2 border-atleti-red bg-white text-atleti-red shadow-sm flex items-center justify-center cursor-grab hover:bg-red-100 transition-all border-dashed">
+                <div draggable="true" ondragstart="window.handleGKDragStart(event)" ontouchstart="window.handleTouchStart(event)" ontouchmove="window.handleTouchMove(event)" ontouchend="window.handleTouchEnd(event)" class="touch-draggable p-2.5 rounded-lg border-2 border-atleti-red bg-white text-atleti-red shadow-sm flex items-center justify-center cursor-grab hover:bg-red-100 transition-all border-dashed">
                     <i class="fa-solid fa-mitten text-lg mr-2"></i>
                     <span class="font-bold text-sm">Fijar Zona GK</span>
                 </div>
@@ -189,7 +197,7 @@
                 </button>
                 
                 <!-- BOTÓN MANUAL PARA INSTALAR PWA -->
-                <button onclick="window.forceInstallModal()" class="w-full bg-slate-800 hover:bg-slate-900 text-white text-sm font-bold py-2.5 px-4 rounded-lg shadow-md transition-colors flex justify-center items-center border border-slate-700">
+                <button id="install-app-btn" onclick="window.forceInstallModal()" class="w-full bg-slate-800 hover:bg-slate-900 text-white text-sm font-bold py-2.5 px-4 rounded-lg shadow-md transition-colors flex justify-center items-center border border-slate-700">
                     <i class="fa-solid fa-mobile-screen mr-2"></i> Instalar App
                 </button>
                 <p class="text-[9px] text-center text-slate-400 mt-1">Los cambios también se guardan solos</p>
@@ -493,6 +501,11 @@
                 card.draggable = true;
                 card.ondragstart = window.handleDragStart;
                 
+                // NUEVO: Añadimos eventos táctiles a los equipos
+                card.ontouchstart = window.handleTouchStart;
+                card.ontouchmove = window.handleTouchMove;
+                card.ontouchend = window.handleTouchEnd;
+                
                 const activeSuffix = `-${state.activeSlot}`;
                 const assignedKey = Object.keys(state.assignments).find(key => 
                     state.assignments[key] === team.id && key.endsWith(activeSuffix)
@@ -506,7 +519,7 @@
                         const span = targetZone.querySelector('span');
                         if(span) span.style.display = 'none';
                         
-                        card.className = `team-card-on-pitch w-full max-w-[200px] p-4 rounded-xl border border-white/30 bg-atleti-blue/95 text-white shadow-[0_8px_15px_rgba(0,0,0,0.4)] backdrop-blur-sm flex flex-col items-center justify-center transform hover:scale-105 cursor-grab z-20 absolute`;
+                        card.className = `touch-draggable team-card-on-pitch w-full max-w-[200px] p-4 rounded-xl border border-white/30 bg-atleti-blue/95 text-white shadow-[0_8px_15px_rgba(0,0,0,0.4)] backdrop-blur-sm flex flex-col items-center justify-center transform hover:scale-105 cursor-grab z-20 absolute`;
                         card.innerHTML = `
                             <div class="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center mb-2 shadow-inner p-1.5 border border-white/10">
                                 <img src="ESCUDO%20ATM.png" alt="Atleti" class="w-full h-full object-contain drop-shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
@@ -522,7 +535,7 @@
                         targetZone.classList.add('bg-black/20');
                     }
                 } else {
-                    card.className = `team-card p-3 rounded-lg border border-slate-200 bg-white text-slate-700 shadow-sm flex items-center justify-between group hover:border-atleti-red/50`;
+                    card.className = `touch-draggable team-card p-3 rounded-lg border border-slate-200 bg-white text-slate-700 shadow-sm flex items-center justify-between group hover:border-atleti-red/50`;
                     card.innerHTML = `
                         <div class="flex items-center space-x-3 pointer-events-none">
                             <div class="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center group-hover:bg-red-50 transition-colors p-1.5">
@@ -663,6 +676,98 @@
 
             renderTeams();
             saveAssignments();
+        };
+
+        // ==========================================
+        // NUEVA LÓGICA: SOPORTE TÁCTIL (MÓVILES Y TABLETS)
+        // ==========================================
+        window.draggedItem = null;
+        window.ghostEl = null;
+        window.gkMarkerTouch = false;
+
+        window.handleTouchStart = (ev) => {
+            const target = ev.target.closest('.touch-draggable');
+            if (!target) return;
+            
+            // Permitimos el drag desactivando el scroll
+            window.draggedItem = target;
+            window.gkMarkerTouch = target.innerHTML.includes('Fijar Zona GK');
+            
+            const touch = ev.touches[0];
+            
+            // Crear el elemento fantasma que sigue al dedo
+            window.ghostEl = target.cloneNode(true);
+            window.ghostEl.style.position = 'fixed';
+            window.ghostEl.style.zIndex = '9999';
+            window.ghostEl.style.opacity = '0.8';
+            window.ghostEl.style.pointerEvents = 'none'; // Clave para que detecte lo que hay debajo
+            window.ghostEl.style.width = target.offsetWidth + 'px';
+            window.ghostEl.style.margin = '0';
+            document.body.appendChild(window.ghostEl);
+
+            window.moveGhost(touch.clientX, touch.clientY);
+        };
+
+        window.handleTouchMove = (ev) => {
+            if (!window.ghostEl) return;
+            // Prevenir el scroll o pull-to-refresh de los móviles al arrastrar
+            if (ev.cancelable) ev.preventDefault();
+            
+            const touch = ev.touches[0];
+            window.moveGhost(touch.clientX, touch.clientY);
+            
+            // Iluminar la zona de caída
+            const dropTargetEl = document.elementFromPoint(touch.clientX, touch.clientY);
+            const dropZone = dropTargetEl ? dropTargetEl.closest('.pitch-bg div[id]') : null;
+            document.querySelectorAll('.drop-target').forEach(el => el.classList.remove('drop-target'));
+            if (dropZone) dropZone.classList.add('drop-target');
+        };
+
+        window.handleTouchEnd = (ev) => {
+            if (!window.draggedItem || !window.ghostEl) return;
+            
+            const touch = ev.changedTouches[0];
+            window.ghostEl.remove();
+            window.ghostEl = null;
+            
+            document.querySelectorAll('.drop-target').forEach(el => el.classList.remove('drop-target'));
+
+            const dropTargetEl = document.elementFromPoint(touch.clientX, touch.clientY);
+            const dropZone = dropTargetEl ? dropTargetEl.closest('.pitch-bg div[id]') : null;
+            
+            let spaceId = 'unassigned';
+            if (dropZone) {
+                spaceId = dropZone.id;
+            } else if (dropTargetEl && dropTargetEl.closest('#unassigned-teams')) {
+                spaceId = 'unassigned';
+            } else {
+                 window.draggedItem = null;
+                 window.gkMarkerTouch = false;
+                 return; // Soltado fuera de una zona válida
+            }
+
+            // Simular el evento original de "Drop" para reutilizar tu lógica
+            const mockEv = {
+                preventDefault: () => {},
+                dataTransfer: {
+                    getData: (type) => {
+                        if (type === 'gkMarker') return window.gkMarkerTouch ? "true" : null;
+                        if (type === 'teamId' && !window.gkMarkerTouch) return window.draggedItem.id.replace('team-', '');
+                        return null;
+                    }
+                }
+            };
+            
+            window.handleDrop(mockEv, spaceId);
+            
+            window.draggedItem = null;
+            window.gkMarkerTouch = false;
+        };
+
+        window.moveGhost = (x, y) => {
+            if (!window.ghostEl) return;
+            window.ghostEl.style.left = (x - window.ghostEl.offsetWidth / 2) + 'px';
+            window.ghostEl.style.top = (y - window.ghostEl.offsetHeight / 2) + 'px';
         };
 
         window.triggerAutoAssign = () => {
@@ -901,6 +1006,12 @@
             document.getElementById('install-modal').classList.add('hidden');
             document.getElementById('install-modal').classList.remove('flex');
         };
+
+        // Extra: Refuerzo para navegadores iOS/Safari que no respetan el CSS display-mode a veces
+        if (window.navigator.standalone === true) {
+            const btn = document.getElementById('install-app-btn');
+            if(btn) btn.style.display = 'none';
+        }
 
         initFirebase();
 
