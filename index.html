@@ -306,10 +306,17 @@
                 auth = getAuth(app);
                 db = getFirestore(app);
 
-                if (initToken) {
-                    await signInWithCustomToken(auth, initToken);
-                } else {
-                    await signInAnonymously(auth);
+                // REGLA ESTRICTA: Siempre debemos esperar la autenticación antes de acceder a la base de datos
+                try {
+                    if (initToken) {
+                        await signInWithCustomToken(auth, initToken);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                } catch(authErr) {
+                    console.error("No se pudo iniciar sesión. Modo local activado.", authErr);
+                    renderApp(); // Render offline fallback
+                    return; 
                 }
 
                 onAuthStateChanged(auth, (user) => {
@@ -317,11 +324,13 @@
                     if (user) {
                         listenToDate(state.date);
                         listenToSavedDays(); 
+                    } else {
+                        renderApp();
                     }
                 });
 
             } catch (error) {
-                console.error("Error al conectar con Firebase:", error);
+                console.error("Error general al conectar con Firebase:", error);
                 renderApp();
             }
         }
@@ -330,7 +339,9 @@
         // LECTURA / ESCRITURA EN FIRESTORE
         // ==========================================
         function listenToDate(dateStr) {
+            // Protección: Si no hay usuario autenticado, no podemos consultar (evita el error de permisos)
             if (!currentUser || !db) return;
+            
             if (unsubscribeSnapshot) unsubscribeSnapshot();
 
             const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'assignments', dateStr);
@@ -348,12 +359,14 @@
                 renderApp();
             }, (error) => {
                 console.error("Error cargando día:", error);
+                renderApp(); // Asegurar render en caso de error
             });
         }
 
         async function saveAssignments(manual = false) {
+            // Protección: Si no hay usuario, bloqueamos la escritura para evitar errores
             if (!currentUser || !db) {
-                if (manual) window.showToast('No se puede guardar: Trabajando sin conexión', 'error');
+                if (manual) window.showToast('No se puede guardar: Trabajando sin conexión a Base de Datos', 'error');
                 return;
             }
             
@@ -384,6 +397,9 @@
         }
 
         function listenToSavedDays() {
+            // Protección: Evitar error de permisos en el bucle
+            if (!currentUser || !db) return;
+            
             const today = new Date();
             for(let i = -7; i <= 7; i++) {
                 const d = new Date(today);
