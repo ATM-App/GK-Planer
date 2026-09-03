@@ -75,7 +75,7 @@
 </head>
 <body class="h-screen flex flex-col font-sans overflow-hidden text-slate-800">
 
-    <!-- NUEVO: Modal de Instalación PWA (Diseño Atleti) -->
+    <!-- Modal de Instalación PWA (Diseño Atleti) -->
     <div id="install-modal" class="fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-sm hidden items-center justify-center p-4">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden transform transition-all border border-slate-100">
             <!-- Cabecera del modal -->
@@ -109,8 +109,9 @@
     <header class="bg-atleti-red text-white shadow-md z-20 relative">
         <div class="max-w-screen-2xl mx-auto px-4 h-16 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-atleti-blue font-bold text-xl border-2 border-atleti-blue">
-                    <i class="fa-solid fa-shield-halved"></i>
+                <!-- ESCUDO EN LA CABECERA CORREGIDO -->
+                <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center p-1 border-2 border-white/80 shadow-md">
+                    <img src="ESCUDO%20ATM.png" alt="ATM Logo" class="w-full h-full object-contain" onerror="this.src='https://upload.wikimedia.org/wikipedia/en/f/f4/Atletico_Madrid_2017_logo.svg'">
                 </div>
                 <div>
                     <h1 class="text-xl font-bold tracking-wide">ATM GK Planer</h1>
@@ -119,7 +120,7 @@
             </div>
             
             <div class="flex items-center space-x-4">
-                <!-- Selector de Fecha Clásico (Oculto visualmente, accionado por icono) -->
+                <!-- Selector de Fecha Clásico -->
                 <div class="relative cursor-pointer group flex items-center justify-center w-8 h-8 rounded-full hover:bg-white/20 transition-colors">
                     <i class="fa-regular fa-calendar-alt text-lg"></i>
                     <input type="date" id="current-date" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" title="Seleccionar fecha específica" />
@@ -181,12 +182,17 @@
                 <!-- Tarjetas dinámicas -->
             </div>
 
-            <!-- Módulo Guardar (Confirmación visual) -->
-            <div class="p-4 bg-slate-50 border-t border-slate-200 flex-shrink-0">
-                 <button onclick="window.manualSave()" class="w-full bg-green-600 hover:bg-green-700 text-white text-sm font-bold py-3 px-4 rounded-lg shadow-md transition-colors flex justify-center items-center">
+            <!-- Módulo Guardar e Instalación -->
+            <div class="p-4 bg-slate-50 border-t border-slate-200 flex-shrink-0 space-y-2">
+                 <button onclick="window.manualSave()" class="w-full bg-green-600 hover:bg-green-700 text-white text-sm font-bold py-2.5 px-4 rounded-lg shadow-md transition-colors flex justify-center items-center">
                     <i class="fa-solid fa-floppy-disk mr-2"></i> Guardar Día
                 </button>
-                <p class="text-[9px] text-center text-slate-400 mt-2">Los cambios también se guardan solos</p>
+                
+                <!-- BOTÓN MANUAL PARA INSTALAR PWA -->
+                <button onclick="window.forceInstallModal()" class="w-full bg-slate-800 hover:bg-slate-900 text-white text-sm font-bold py-2.5 px-4 rounded-lg shadow-md transition-colors flex justify-center items-center border border-slate-700">
+                    <i class="fa-solid fa-mobile-screen mr-2"></i> Instalar App
+                </button>
+                <p class="text-[9px] text-center text-slate-400 mt-1">Los cambios también se guardan solos</p>
             </div>
         </aside>
 
@@ -819,9 +825,10 @@
         });
 
         // ==========================================
-        // PWA & INSTALACIÓN (AUTO-GENERADO)
+        // PWA & INSTALACIÓN (ACTUALIZADO PARA GITHUB PAGES)
         // ==========================================
         
+        // 1. Inyectar Manifest mediante URI de Datos (Más compatible)
         const manifest = {
             "name": "ATM GK Planer",
             "short_name": "GK Planer",
@@ -844,26 +851,34 @@
                 }
             ]
         };
-        const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
-        document.querySelector('head').insertAdjacentHTML('beforeend', `<link rel="manifest" href="${URL.createObjectURL(manifestBlob)}">`);
+        const manifestUrl = 'data:application/manifest+json;charset=utf-8,' + encodeURIComponent(JSON.stringify(manifest));
+        document.querySelector('head').insertAdjacentHTML('beforeend', `<link rel="manifest" href="${manifestUrl}">`);
 
+        // 2. Registrar Service Worker Básico y funcional
         const swCode = `
             self.addEventListener('install', (e) => { self.skipWaiting(); });
             self.addEventListener('activate', (e) => { e.waitUntil(clients.claim()); });
-            self.addEventListener('fetch', (e) => { });
+            self.addEventListener('fetch', (e) => { 
+                e.respondWith(fetch(e.request).catch(() => new Response('Offline'))); 
+            });
         `;
-        const swBlob = new Blob([swCode], {type: 'text/javascript'});
+        const swBlob = new Blob([swCode], {type: 'application/javascript'});
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(err => console.log("SW Registro:", err));
         }
 
-        let deferredPrompt;
+        // 3. Control del evento de instalación
+        let deferredPrompt = null;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
+        });
+
+        // NUEVO: Función para forzar o guiar la instalación desde el botón manual
+        window.forceInstallModal = () => {
             document.getElementById('install-modal').classList.remove('hidden');
             document.getElementById('install-modal').classList.add('flex');
-        });
+        };
 
         window.installPWA = async () => {
             if (deferredPrompt) {
@@ -873,6 +888,11 @@
                     console.log('App instalada con éxito');
                 }
                 deferredPrompt = null;
+                window.closeInstallModal();
+            } else {
+                // Si el navegador bloquea la instalación PWA automática (muy común en Safari/iOS y en Single Files)
+                // Damos instrucciones claras de cómo añadirlo.
+                alert("Para instalar la aplicación:\n\n📱 iOS (iPhone/iPad):\nToca el botón 'Compartir' (cuadrado con flecha hacia arriba) y luego selecciona 'Añadir a la pantalla de inicio'.\n\n🤖 Android (Chrome):\nToca el menú (3 puntos arriba a la derecha) y selecciona 'Instalar aplicación' o 'Añadir a la pantalla de inicio'.");
                 window.closeInstallModal();
             }
         };
