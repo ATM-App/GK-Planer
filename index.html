@@ -89,9 +89,9 @@
         
         #toast { z-index: 999999 !important; }
 
-        /* Ajustes específicos para asegurar renderizado correcto */
+        /* Ajustes específicos para el layout móvil */
         #main-content-wrapper {
-            height: calc(100vh - 120px); 
+            height: calc(100vh - 120px);
         }
         @media (min-width: 768px) {
             #main-content-wrapper {
@@ -126,7 +126,7 @@
         </div>
     </div>
 
-    <!-- CABECERA FIJA Y RÍGIDA PARA QUE NO SE CORTE EN MÓVIL -->
+    <!-- CABECERA FIJA Y RÍGIDA -->
     <header class="bg-atleti-red text-white shadow-md z-50 shrink-0 flex-none w-full">
         <!-- Fila Superior -->
         <div class="w-full px-3 md:px-4 h-14 md:h-16 flex items-center justify-between">
@@ -141,7 +141,7 @@
             </div>
             
             <div class="flex items-center shrink-0 ml-2 space-x-2">
-                <!-- BOTÓN MODO VISTA (COORDINADOR) -->
+                <!-- BOTÓN MODO VISTA -->
                 <button id="view-mode-btn" onclick="window.toggleViewMode()" class="flex items-center justify-center w-9 h-9 md:w-10 md:h-10 rounded-full bg-white/20 hover:bg-white/30 transition-colors shadow-sm border border-white/10" title="Modo Solo Vista">
                     <i class="fa-solid fa-eye text-base md:text-lg"></i>
                 </button>
@@ -162,7 +162,7 @@
     <main id="main-content-wrapper" class="w-full flex flex-col md:flex-row bg-slate-800">
         
         <!-- Panel Izquierdo: Controles -->
-        <aside id="main-sidebar" class="w-full md:w-80 bg-white shadow-md flex flex-col z-10 shrink-0 border-b border-slate-200 md:border-b-0 h-[40vh] md:h-full transition-all duration-300">
+        <aside id="main-sidebar" class="w-full md:w-80 bg-white shadow-md flex flex-col z-10 shrink-0 border-b border-slate-200 md:border-b-0 h-[35vh] md:h-full transition-all duration-300">
             
             <!-- Contenedor Equipos y Zona GK -->
             <div class="p-2 md:p-4 bg-slate-50 border-b border-slate-100 flex flex-col flex-1 min-h-0">
@@ -180,7 +180,7 @@
                         <span class="font-bold text-[11px] md:text-sm leading-tight text-center pointer-events-none">Zona GK</span>
                     </div>
                     
-                    <!-- Equipos No Asignados (GRID DE 2 COLUMNAS PARA MÓVIL, SIN SCROLL HORIZONTAL) -->
+                    <!-- Equipos No Asignados (GRID PERFECTO PARA MÓVIL) -->
                     <div id="unassigned-teams" class="grid grid-cols-2 md:grid-cols-1 gap-2 md:gap-3 w-full shrink-0" ondrop="window.handleDrop(event, 'unassigned')" ondragover="window.allowDrop(event)"></div>
                 </div>
             </div>
@@ -225,7 +225,7 @@
         </aside>
 
         <!-- Matriz de Trabajo Específico (Área de Campos) -->
-        <section class="flex-1 flex flex-col relative w-full h-[60vh] md:h-full transition-all duration-300">
+        <section class="flex-1 flex flex-col relative w-full h-[65vh] md:h-full transition-all duration-300">
             <!-- Barra Horarios -->
             <div class="h-10 md:h-14 border-b border-slate-700 flex items-center px-3 md:px-6 justify-between bg-slate-900 shadow-sm z-10 shrink-0 w-full">
                 <h3 class="text-[10px] md:text-lg font-semibold text-white truncate pr-2" id="display-date">Entrenamiento</h3>
@@ -442,6 +442,7 @@
             state.viewMode = !state.viewMode;
             const sidebar = document.getElementById('main-sidebar');
             const toggleBtn = document.getElementById('view-mode-btn');
+            
             const section = document.querySelector('section');
 
             if (state.viewMode) {
@@ -472,6 +473,7 @@
             
             let dataFound = false;
 
+            // 1. Buscar en Firebase
             if (db && !isOfflineMode) {
                 try {
                     const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'assignments', prevDateStr);
@@ -487,6 +489,7 @@
                 } catch(e) {}
             }
 
+            // 2. Buscar en LocalStorage si falla Firebase
             if (!dataFound) {
                 try {
                     const localData = localStorage.getItem(`atm_gk_${prevDateStr}`);
@@ -524,6 +527,7 @@
             const container = document.getElementById('fields-container');
             container.innerHTML = ''; 
             
+            // Excluir campos borrados
             const baseFields = FIELDS.filter(f => !(state.deletedFields || []).includes(f.id));
             const allFields = [...baseFields, ...(state.customFields || [])];
 
@@ -594,13 +598,13 @@
                 if (!state.viewMode) {
                     card.draggable = true;
                     card.ondragstart = window.handleDragStart;
-                    card.classList.add('touch-draggable');
+                    card.classList.add('touch-draggable'); 
                 }
                 
                 const activeSuffix = `-${state.activeSlot}`;
                 const assignedKey = Object.keys(state.assignments).find(key => state.assignments[key] === team.id && key.endsWith(activeSuffix));
 
-                const categoryDot = `<div class="absolute -top-1 -right-1 w-3 h-3 md:w-4 md:h-4 rounded-full ${team.categoryColor} border-2 border-white shadow-sm z-30"></div>`;
+                const categoryDot = `<div class="absolute -top-1 -right-1 w-3 h-3 md:w-4 md:h-4 rounded-full ${team.categoryColor} border-2 border-white shadow-sm z-30 pointer-events-none"></div>`;
 
                 if (assignedKey) {
                     const spaceId = assignedKey.replace(activeSuffix, '');
@@ -621,19 +625,17 @@
                         targetZone.appendChild(card); targetZone.classList.add('bg-black/20');
                     }
                 } else {
-                    // CORRECCIÓN: Tarjetas móviles en Grid con min-h y break-words para que el nombre quepa siempre.
-                    card.className = `touch-draggable ${state.viewMode ? '' : 'cursor-grab group hover:border-atleti-red/50'} team-card p-2 w-full h-auto min-h-[50px] rounded-lg border border-slate-200 bg-white text-slate-700 shadow-sm flex items-center justify-between`;
+                    // CLAVE: Altura mínima y break-words para que el nombre de los equipos se vea entero en el Grid de móvil
+                    card.className = `touch-draggable ${state.viewMode ? '' : 'cursor-grab group hover:border-atleti-red/50'} team-card p-2 md:p-3 w-full shrink-0 min-h-[56px] rounded-lg border border-slate-200 bg-white text-slate-700 shadow-sm flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 relative overflow-hidden`;
                     card.innerHTML = `
-                        <div class="flex items-center space-x-2 pointer-events-none w-full">
-                            <div class="relative shrink-0">
-                                <div class="w-7 h-7 md:w-10 md:h-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center p-0.5">
-                                    <img src="ESCUDO%20ATM.png" alt="Atleti" class="w-full h-full object-contain drop-shadow-sm" onerror="this.style.display='none';">
-                                </div>
-                                ${categoryDot}
+                        <div class="relative shrink-0 pointer-events-none">
+                            <div class="w-7 h-7 md:w-10 md:h-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center p-0.5">
+                                <img src="ESCUDO%20ATM.png" alt="Atleti" class="w-full h-full object-contain drop-shadow-sm" onerror="this.style.display='none';">
                             </div>
-                            <p class="font-bold text-[11px] md:text-sm leading-tight text-left break-words w-full pointer-events-none pr-1">${team.name}</p>
+                            ${categoryDot}
                         </div>
-                        ${state.viewMode ? '' : '<i class="hidden md:block fa-solid fa-grip-vertical text-slate-300 group-hover:text-atleti-red pointer-events-none shrink-0"></i>'}
+                        <p class="font-bold text-[10px] md:text-sm leading-tight text-center md:text-left break-words w-full pointer-events-none">${team.name}</p>
+                        ${state.viewMode ? '' : '<i class="hidden md:block fa-solid fa-grip-vertical text-slate-300 group-hover:text-atleti-red pointer-events-none absolute right-3"></i>'}
                     `;
                     unassignedContainer.appendChild(card); unassignedCount++;
                 }
@@ -717,6 +719,9 @@
             return badge;
         }
 
+        // ==========================================
+        // LÓGICA DE PESTAÑAS (HORARIOS)
+        // ==========================================
         window.setTimeSlot = (slotId) => {
             state.activeSlot = slotId;
             TIME_SLOTS.forEach(slot => {
@@ -730,6 +735,9 @@
             renderTeams(); 
         };
 
+        // ==========================================
+        // DRAG & DROP (DESKTOP)
+        // ==========================================
         window.allowDrop = (ev) => ev.preventDefault();
         window.dragEnter = (ev) => { ev.preventDefault(); const target = ev.target.closest('.pitch-bg div[id]'); if (target) target.classList.add('drop-target'); };
         window.dragLeave = (ev) => { const target = ev.target.closest('.pitch-bg div[id]'); if (target) target.classList.remove('drop-target'); };
@@ -763,6 +771,9 @@
             renderTeams(); saveAssignments();
         };
 
+        // ==========================================
+        // TOUCH SUPPORT (MÓVIL & TABLET)
+        // ==========================================
         window.draggedItem = null; 
         window.ghostEl = null; 
         window.gkMarkerTouch = false; 
@@ -802,21 +813,25 @@
             
             window.ghostEl = target.cloneNode(true);
             
-            window.ghostEl.classList.remove('absolute', 'relative', 'transform', 'hover:scale-105');
-            window.ghostEl.style.setProperty('position', 'fixed', 'important'); 
-            window.ghostEl.style.setProperty('z-index', '999999', 'important'); 
-            window.ghostEl.style.setProperty('opacity', '0.85', 'important'); 
-            window.ghostEl.style.setProperty('pointer-events', 'none', 'important'); 
-            window.ghostEl.style.setProperty('width', rect.width + 'px', 'important'); 
-            window.ghostEl.style.setProperty('height', rect.height + 'px', 'important'); 
-            window.ghostEl.style.setProperty('margin', '0', 'important'); 
-            window.ghostEl.style.setProperty('left', '0px', 'important'); 
-            window.ghostEl.style.setProperty('top', '0px', 'important'); 
-            window.ghostEl.style.setProperty('transform-origin', 'top left', 'important');
+            window.ghostEl.classList.remove('relative', 'transform', 'hover:scale-105', 'hover:border-atleti-red/50');
+            window.ghostEl.classList.add('ghost-dragging');
+            
+            Object.assign(window.ghostEl.style, { 
+                position: 'fixed', 
+                zIndex: '999999', 
+                opacity: '0.9', 
+                pointerEvents: 'none', 
+                width: rect.width + 'px', 
+                height: rect.height + 'px', 
+                margin: '0', 
+                left: '0px', 
+                top: '0px', 
+                transformOrigin: 'top left' 
+            });
             
             document.body.appendChild(window.ghostEl);
-            
             window.moveGhost(touch.clientX, touch.clientY);
+            target.style.opacity = '0.4';
         };
 
         window.handleTouchMove = (ev) => {
@@ -885,6 +900,9 @@
             window.ghostEl.style.transform = `translate3d(${posX}px, ${posY}px, 0)`;
         };
 
+        // ==========================================
+        // OTRAS FUNCIONES Y BORRAR CAMPO
+        // ==========================================
         window.triggerAutoAssign = () => {
             state.assignments = {}; state.gkAssignments = {}; 
             const dateObj = new Date(state.date); const dayOfYear = Math.floor((dateObj - new Date(dateObj.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
@@ -952,24 +970,23 @@
         const dateInput = document.getElementById('current-date'); dateInput.value = state.date; updateDisplayDateUI();
         dateInput.addEventListener('change', (e) => { if(!e.target.value) return; state.date = e.target.value; updateDisplayDateUI(); listenToDate(state.date); });
 
-        // EXPORTAR DISEÑO A WHATSAPP: SISTEMA ROBUSTO DE DIBUJADO DE CAMPOS
+        // ==========================================
+        // EXPORTAR DISEÑO A WHATSAPP: SISTEMA ROBUSTO
+        // ==========================================
         window.shareWhatsApp = async () => {
             window.showToast('Generando diseño profesional...', 'success');
             
-            // CORRECCIÓN: Renderizado invisible pero presente en el DOM para evitar fallos en móviles
             const exportContainer = document.createElement('div');
-            exportContainer.style.position = 'fixed';
-            exportContainer.style.top = '0';
-            exportContainer.style.left = '0';
-            exportContainer.style.width = '1200px';
-            exportContainer.style.backgroundColor = '#0f172a';
-            exportContainer.style.fontFamily = "'Inter', sans-serif";
-            exportContainer.style.padding = '40px';
-            exportContainer.style.color = 'white';
+            // CLAVE: Evita sombras u oscurecimientos al alejarlo de la vista sin z-index negativo ni opacidad
+            exportContainer.style.position = 'absolute'; 
+            exportContainer.style.left = '-10000px'; 
+            exportContainer.style.top = '0'; 
+            exportContainer.style.width = '1200px'; 
+            exportContainer.style.backgroundColor = '#0f172a'; 
+            exportContainer.style.fontFamily = "'Inter', sans-serif"; 
+            exportContainer.style.padding = '40px'; 
+            exportContainer.style.color = 'white'; 
             exportContainer.style.boxSizing = 'border-box';
-            exportContainer.style.zIndex = '-9999';
-            exportContainer.style.pointerEvents = 'none';
-            exportContainer.style.opacity = '0.01'; // Se hace casi invisible pero el navegador lo dibuja
             
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }; 
             const fullDateStr = new Date(state.date).toLocaleDateString('es-ES', options); 
@@ -988,20 +1005,22 @@
                 <div style="display: flex; flex-direction: column; gap: 40px;">
             `;
 
-            // CORRECCIÓN: Renderización exacta de Zona GK como en la foto 2
             const renderExportTeam = (spaceId, isLeft) => {
-                const assignedTeamId = state.assignments[`${spaceId}-${state.activeSlot}`]; 
-                const hasGK = state.gkAssignments[`${spaceId}-${state.activeSlot}`]; 
+                const assignedTeamId = state.assignments[`${spaceId}-${state.activeSlot}`];
+                const hasGK = state.gkAssignments[`${spaceId}-${state.activeSlot}`];
                 let content = '<div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">';
-                
+
                 if (hasGK) {
-                    let tasksStr = Array.isArray(hasGK) && hasGK.length > 0 ? hasGK.join(' - ') : 'T1 - T2 - T3';
+                    let tasksStr = 'T1 - T2 - T3';
+                    if (Array.isArray(hasGK)) tasksStr = hasGK.length > 0 ? hasGK.join(' - ') : 'Libre';
+                    
                     const anchorPos = isLeft ? 'left: 0;' : 'right: 0;';
                     const borderRadius = isLeft ? '0 12px 12px 0' : '12px 0 0 12px';
                     const borderSide = isLeft ? 'border-left: none;' : 'border-right: none;';
                     
+                    // CLAVE: El cuadro rojo se ancla a la portería con el mismo tamaño (180x220)
                     content += `
-                        <div style="position: absolute; ${anchorPos} top: 17.5%; width: 40%; height: 65%; background: rgba(203, 53, 36, 0.2); border: 4px solid #CB3524; ${borderSide} border-radius: ${borderRadius}; z-index: 10;">
+                        <div style="position: absolute; ${anchorPos} top: 50%; transform: translateY(-50%); width: 180px; height: 220px; background: rgba(203, 53, 36, 0.2); border: 4px solid #CB3524; ${borderSide} border-radius: ${borderRadius}; z-index: 10;">
                             <div style="position: absolute; top: -20px; left: 50%; transform: translateX(-50%); background: #CB3524; color: white; padding: 6px 16px; border-radius: 12px; font-size: 13px; font-weight: bold; border: 2px solid white; display: flex; flex-direction: column; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 15; min-width: 100px; white-space: nowrap;">
                                 <span style="margin-bottom: 2px;">🛡️ ZONA GK</span>
                                 <span style="font-size: 11px; color: #fecaca; letter-spacing: 1px;">${tasksStr}</span>
@@ -1009,23 +1028,22 @@
                         </div>
                     `;
                 }
-                
+
                 if (assignedTeamId) {
                     const team = TEAMS.find(t => t.id === assignedTeamId);
                     if (team) {
-                        const dotColor = team.categoryColor.includes('orange') ? '#f97316' : team.categoryColor.includes('green') ? '#22c55e' : '#60a5fa';
                         content += `
-                            <div style="background: rgba(39, 50, 70, 0.95); width: 220px; padding: 20px; border-radius: 16px; border: 2px solid rgba(255,255,255,0.3); display: flex; flex-direction: column; align-items: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 20;">
-                                <div style="width: 75px; height: 75px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; padding: 5px; position: relative;">
+                            <div style="background: rgba(39, 50, 70, 0.95); width: 220px; padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.3); display: flex; flex-direction: column; align-items: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 20;">
+                                <div style="width: 70px; height: 70px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; padding: 5px; position: relative;">
                                     <img src="ESCUDO%20ATM.png" style="width: 100%; height: 100%; object-fit: contain;">
-                                    <div style="position: absolute; top: 0; right: 0; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; background-color: ${dotColor};"></div>
+                                    <div style="position: absolute; top: 0; right: 0; width: 14px; height: 14px; border-radius: 50%; border: 2px solid white; background-color: ${team.categoryColor.includes('orange') ? '#f97316' : team.categoryColor.includes('green') ? '#22c55e' : '#60a5fa'};"></div>
                                 </div>
                                 <div style="font-size: 20px; font-weight: bold; text-align: center; color: white;">${team.name}</div>
                             </div>
                         `;
                     }
-                } else { 
-                    content += `<div style="color: rgba(255,255,255,0.8); font-size: 16px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; background: rgba(0,0,0,0.5); padding: 8px 24px; border-radius: 30px; border: 1px dashed rgba(255,255,255,0.5); z-index: 20;">Libre</div>`;
+                } else {
+                     content += `<div style="color: rgba(255,255,255,0.4); font-size: 16px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; background: rgba(0,0,0,0.4); padding: 8px 24px; border-radius: 30px; z-index: 20;">Libre</div>`;
                 }
                 content += '</div>';
                 return content;
@@ -1035,16 +1053,13 @@
                 htmlContent += `
                     <div style="background: #1e293b; border-radius: 24px; padding: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.3);">
                         <h3 style="font-size: 28px; font-weight: bold; color: white; text-align: center; margin: 0 0 25px 0;">📍 ${field.name}</h3>
-                        <div style="height: 380px; position: relative; border-radius: 12px; border: 6px solid rgba(255,255,255,0.9); background-color: #4c962b; overflow: hidden; display: flex;">
-                            
-                            <!-- Franjas de Césped manuales -->
+                        <div style="height: 380px; position: relative; border-radius: 12px; border: 6px solid rgba(255,255,255,0.8); background-color: #4c962b; display: flex; overflow: hidden;">
                             <div style="position: absolute; top: 0; bottom: 0; left: 0; width: 10%; background-color: #448924; z-index: 0;"></div>
                             <div style="position: absolute; top: 0; bottom: 0; left: 20%; width: 10%; background-color: #448924; z-index: 0;"></div>
                             <div style="position: absolute; top: 0; bottom: 0; left: 40%; width: 10%; background-color: #448924; z-index: 0;"></div>
                             <div style="position: absolute; top: 0; bottom: 0; left: 60%; width: 10%; background-color: #448924; z-index: 0;"></div>
                             <div style="position: absolute; top: 0; bottom: 0; left: 80%; width: 10%; background-color: #448924; z-index: 0;"></div>
-
-                            <!-- Líneas del campo -->
+                            
                             <div style="position: absolute; left: 50%; top: 0; bottom: 0; width: 6px; background: rgba(255,255,255,0.9); transform: translateX(-50%); z-index: 1;"></div>
                             <div style="position: absolute; left: 50%; top: 50%; width: 160px; height: 160px; border: 6px solid rgba(255,255,255,0.9); border-radius: 50%; transform: translate(-50%, -50%); z-index: 1;"></div>
                             <div style="position: absolute; left: 50%; top: 50%; width: 16px; height: 16px; background: white; border-radius: 50%; transform: translate(-50%, -50%); z-index: 1;"></div>
@@ -1062,49 +1077,47 @@
             exportContainer.innerHTML = htmlContent; 
             document.body.appendChild(exportContainer);
 
-            // Dejamos que el DOM cargue las imágenes brevemente
-            await new Promise(r => setTimeout(r, 600));
+            // Dejamos 300ms de respiro para que el navegador "dibuje" el DOM fantasma antes de fotografiar
+            await new Promise(r => setTimeout(r, 300));
 
             try {
-                // CORRECCIÓN: Optimización de escala para que no falle la memoria en móviles
-                const scaleValue = window.innerWidth < 768 ? 1.5 : 2;
+                // CLAVE: Bajamos la escala a 1.5 si es móvil para evitar que Safari bloquee la foto por falta de memoria
+                const isMobile = window.innerWidth < 768;
                 const canvas = await html2canvas(exportContainer, { 
-                    scale: scaleValue, 
+                    scale: isMobile ? 1.5 : 2, 
                     backgroundColor: '#0f172a', 
-                    useCORS: true,
-                    logging: false
+                    useCORS: true 
                 });
                 
                 document.body.removeChild(exportContainer);
 
-                // CORRECCIÓN: Generación de archivo nativa mejorada
                 canvas.toBlob(async (blob) => {
                     const filename = `ATM_GK_Planer_${state.date}_${state.activeSlot}.png`;
                     const file = new File([blob], filename, { type: 'image/png' });
                     
+                    // INTENTO 1: Compartir nativo (Funciona en móviles modernos)
                     if (navigator.canShare && navigator.canShare({ files: [file] })) {
                         try { 
                             await navigator.share({ 
                                 files: [file], 
-                                title: 'Planificación ATM GK', 
-                                text: `Planificación del ${fullDateStr} (${activeSlotText})` 
+                                title: 'Planificación ATM GK' 
                             }); 
                             window.showToast('Diseño compartido', 'success'); 
-                            return;
+                            return; 
                         } catch(e) { 
-                            console.log("Compartir cancelado o no soportado, forzando descarga."); 
+                            console.log("Compartir cancelado o no soportado"); 
                         }
-                    }
+                    } 
                     
-                    // Fallback para descargar si compartir nativo no está disponible
-                    const url = URL.createObjectURL(blob); 
+                    // INTENTO 2: Descarga clásica con ToDataURL (A prueba de fallos para Safari y PC)
+                    const dataUrl = canvas.toDataURL('image/png');
                     const link = document.createElement('a'); 
                     link.download = filename; 
-                    link.href = url; 
+                    link.href = dataUrl; 
                     document.body.appendChild(link);
                     link.click(); 
                     document.body.removeChild(link);
-                    URL.revokeObjectURL(url); 
+                    
                     window.showToast('Diseño descargado', 'success');
                     
                 }, 'image/png');
@@ -1116,6 +1129,7 @@
             }
         };
 
+        // PWA E INSTALACIÓN 
         window.forceInstallModal = () => { document.getElementById('install-modal').classList.remove('hidden'); document.getElementById('install-modal').classList.add('flex'); };
         window.installPWA = async () => { alert("Para instalar la aplicación:\n\n📱 iOS (iPhone/iPad):\nToca el botón 'Compartir' (cuadrado con flecha hacia arriba) y selecciona 'Añadir a la pantalla de inicio'.\n\n🤖 Android (Chrome):\nToca el menú (3 puntos arriba a la derecha) y selecciona 'Añadir a la pantalla de inicio'."); window.closeInstallModal(); };
         window.closeInstallModal = () => { document.getElementById('install-modal').classList.add('hidden'); document.getElementById('install-modal').classList.remove('flex'); };
