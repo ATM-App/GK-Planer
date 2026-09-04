@@ -91,11 +91,11 @@
 
         /* Ajustes específicos para el layout móvil para evitar que la cabecera desaparezca */
         #main-content-wrapper {
-            height: calc(100vh - 104px); /* Ajuste preciso: 56px cabecera + 48px carrusel = 104px */
+            height: calc(100vh - 104px);
         }
         @media (min-width: 768px) {
             #main-content-wrapper {
-                height: calc(100vh - 120px); /* Ajuste desktop: 64px cabecera + 56px carrusel = 120px */
+                height: calc(100vh - 120px);
             }
         }
     </style>
@@ -127,7 +127,7 @@
         </div>
     </div>
 
-    <!-- CABECERA FIJA: Asegurada con z-50 y shrink-0 para que nunca se oculte -->
+    <!-- CABECERA FIJA -->
     <header class="bg-atleti-red text-white shadow-md z-50 shrink-0 w-full flex flex-col">
         <!-- Fila Superior: Logo, Título y Controles -->
         <div class="w-full px-3 md:px-4 h-14 md:h-16 flex items-center justify-between shrink-0">
@@ -172,7 +172,7 @@
                     <span id="unassigned-count" class="bg-slate-200 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
                 </div>
                 
-                <!-- ÁREA DE EQUIPOS (GRID DE 2 COLUMNAS EN MÓVIL) -->
+                <!-- ÁREA DE EQUIPOS: Flex wrap para móviles -->
                 <div class="flex-1 overflow-y-auto no-scrollbar pb-2 pt-1 flex flex-col space-y-2 md:space-y-3 w-full" id="unassigned-teams-container">
                     
                     <!-- Marcador GK -->
@@ -181,8 +181,8 @@
                         <span class="font-bold text-[11px] md:text-sm leading-tight text-center pointer-events-none">Zona GK</span>
                     </div>
                     
-                    <!-- Equipos No Asignados (GRID) -->
-                    <div id="unassigned-teams" class="grid grid-cols-2 md:grid-cols-1 gap-2 md:gap-3 w-full shrink-0" ondrop="window.handleDrop(event, 'unassigned')" ondragover="window.allowDrop(event)"></div>
+                    <!-- Equipos No Asignados (FLEX WRAP) -->
+                    <div id="unassigned-teams" class="flex flex-wrap md:flex-col gap-2 md:gap-3 w-full shrink-0" ondrop="window.handleDrop(event, 'unassigned')" ondragover="window.allowDrop(event)"></div>
                 </div>
             </div>
 
@@ -624,8 +624,8 @@
                         targetZone.appendChild(card); targetZone.classList.add('bg-black/20');
                     }
                 } else {
-                    // SE USA W-FULL PARA QUE EN EL GRID OCUPEN EL ESPACIO CORRECTO
-                    card.className = `touch-draggable ${state.viewMode ? '' : 'cursor-grab group hover:border-atleti-red/50'} team-card p-1.5 md:p-3 w-full shrink-0 h-fit rounded-lg border border-slate-200 bg-white text-slate-700 shadow-sm flex flex-col md:flex-row items-center md:justify-between`;
+                    // USO DE ANCHOS PARA EL FLEX WRAP EN MÓVIL
+                    card.className = `touch-draggable ${state.viewMode ? '' : 'cursor-grab group hover:border-atleti-red/50'} team-card p-1.5 md:p-3 w-[calc(50%-0.25rem)] md:w-full shrink-0 h-fit rounded-lg border border-slate-200 bg-white text-slate-700 shadow-sm flex flex-col md:flex-row items-center justify-center md:justify-between`;
                     card.innerHTML = `
                         <div class="flex flex-col md:flex-row items-center space-y-1 md:space-y-0 md:space-x-3 pointer-events-none w-full">
                             <div class="relative shrink-0 pointer-events-none">
@@ -967,7 +967,7 @@
         const dateInput = document.getElementById('current-date'); dateInput.value = state.date; updateDisplayDateUI();
         dateInput.addEventListener('change', (e) => { if(!e.target.value) return; state.date = e.target.value; updateDisplayDateUI(); listenToDate(state.date); });
 
-        // EXPORTAR DISEÑO A WHATSAPP (CORRECCIÓN ZONA GK COMO MODO VISTA)
+        // EXPORTAR DISEÑO: SISTEMA ROBUSTO 
         window.shareWhatsApp = async () => {
             window.showToast('Generando diseño profesional...', 'success');
             
@@ -993,10 +993,8 @@
                 const assignedTeamId = state.assignments[`${spaceId}-${state.activeSlot}`];
                 const hasGK = state.gkAssignments[`${spaceId}-${state.activeSlot}`];
                 
-                // Contenedor principal que ocupa toda la mitad del campo
                 let content = '<div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">';
 
-                // ZONA GK (Anclada a la portería, como en la vista de la app)
                 if (hasGK) {
                     let tasksStr = 'T1 - T2 - T3';
                     if (Array.isArray(hasGK)) tasksStr = hasGK.length > 0 ? hasGK.join(' - ') : 'Libre';
@@ -1005,10 +1003,8 @@
                     const borderRadius = isLeft ? '0 12px 12px 0' : '12px 0 0 12px';
                     const borderSide = isLeft ? 'border-left: none;' : 'border-right: none;';
                     
-                    // El rectángulo rojo que marca el área
                     content += `
                         <div style="position: absolute; ${anchorPos} top: 17.5%; width: 40%; height: 65%; background: rgba(203, 53, 36, 0.2); border: 4px solid #CB3524; ${borderSide} border-radius: ${borderRadius}; z-index: 10;">
-                            <!-- La chapa de tareas (centrada arriba del rectángulo rojo) -->
                             <div style="position: absolute; top: -20px; left: 50%; transform: translateX(-50%); background: #CB3524; color: white; padding: 6px 16px; border-radius: 12px; font-size: 13px; font-weight: bold; border: 2px solid white; display: flex; flex-direction: column; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 15; min-width: 100px; white-space: nowrap;">
                                 <span style="margin-bottom: 2px;">🛡️ ZONA GK</span>
                                 <span style="font-size: 11px; color: #fecaca; letter-spacing: 1px;">${tasksStr}</span>
@@ -1017,7 +1013,6 @@
                     `;
                 }
 
-                // TARJETA DEL EQUIPO (Centrada)
                 if (assignedTeamId) {
                     const team = TEAMS.find(t => t.id === assignedTeamId);
                     if (team) {
@@ -1045,14 +1040,12 @@
                         <h3 style="font-size: 28px; font-weight: bold; color: white; text-align: center; margin: 0 0 25px 0;">📍 ${field.name}</h3>
                         <div style="height: 380px; position: relative; border-radius: 12px; border: 6px solid rgba(255,255,255,0.8); background-color: #4c962b; overflow: hidden; display: flex;">
                             
-                            <!-- Franjas de Césped construidas con divs -->
                             <div style="position: absolute; top: 0; bottom: 0; left: 0; width: 10%; background-color: #448924; z-index: 0;"></div>
                             <div style="position: absolute; top: 0; bottom: 0; left: 20%; width: 10%; background-color: #448924; z-index: 0;"></div>
                             <div style="position: absolute; top: 0; bottom: 0; left: 40%; width: 10%; background-color: #448924; z-index: 0;"></div>
                             <div style="position: absolute; top: 0; bottom: 0; left: 60%; width: 10%; background-color: #448924; z-index: 0;"></div>
                             <div style="position: absolute; top: 0; bottom: 0; left: 80%; width: 10%; background-color: #448924; z-index: 0;"></div>
 
-                            <!-- Líneas del campo -->
                             <div style="position: absolute; left: 50%; top: 0; bottom: 0; width: 6px; background: rgba(255,255,255,0.8); transform: translateX(-50%); z-index: 1;"></div>
                             <div style="position: absolute; left: 50%; top: 50%; width: 160px; height: 160px; border: 6px solid rgba(255,255,255,0.8); border-radius: 50%; transform: translate(-50%, -50%); z-index: 1;"></div>
                             <div style="position: absolute; left: 50%; top: 50%; width: 12px; height: 12px; background: white; border-radius: 50%; transform: translate(-50%, -50%); z-index: 1;"></div>
@@ -1080,13 +1073,27 @@
                     const file = new File([blob], filename, { type: 'image/png' });
                     
                     if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                        try { await navigator.share({ files: [file], title: 'Planificación ATM GK', text: `Planificación del ${fullDateStr} (${activeSlotText})` }); window.showToast('Diseño compartido', 'success'); } catch(e) { console.log("Compartir cancelado o no soportado"); }
+                        try { 
+                            await navigator.share({ files: [file], title: 'Planificación ATM GK', text: `Planificación del ${fullDateStr}` }); 
+                            window.showToast('Diseño compartido', 'success'); 
+                        } catch(e) { console.log("Compartir cancelado"); }
                     } else {
-                        const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.download = filename; link.href = url; link.click(); URL.revokeObjectURL(url); window.showToast('Diseño descargado. ¡Envíalo por WhatsApp!', 'success');
+                        const url = URL.createObjectURL(blob); 
+                        const link = document.createElement('a'); 
+                        link.download = filename; 
+                        link.href = url; 
+                        document.body.appendChild(link);
+                        link.click(); 
+                        setTimeout(() => { document.body.removeChild(link); URL.revokeObjectURL(url); }, 100);
+                        window.showToast('Diseño descargado. ¡Envíalo por WhatsApp!', 'success');
                     }
                 }, 'image/png');
 
-            } catch (err) { console.error("Error capturando imagen", err); window.showToast('Error al generar la imagen', 'error'); if (document.body.contains(exportContainer)) document.body.removeChild(exportContainer); }
+            } catch (err) { 
+                console.error("Error capturando imagen", err); 
+                window.showToast('Error al generar la imagen', 'error'); 
+                if (document.body.contains(exportContainer)) document.body.removeChild(exportContainer); 
+            }
         };
 
         // PWA E INSTALACIÓN 
