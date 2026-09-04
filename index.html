@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ATM GK Planer | Asignación de Espacios</title>
     <!-- Tailwind CSS -->
-    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome -->
-    <link rel="stylesheet" href="[https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css](https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css)">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
-    <link href="[https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap](https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap)" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <!-- Librería para generar Imágenes (Exportar) -->
-    <script src="[https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js](https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js)"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <!-- Metadatos PWA y Favicon -->
     <meta name="theme-color" content="#CB3524">
@@ -46,16 +46,33 @@
             border: 2px dashed #CB3524 !important;
         }
 
-        .team-card { transition: all 0.2s ease; cursor: grab; }
-        .team-card:active { cursor: grabbing; transform: scale(0.95); }
+        .team-card {
+            transition: all 0.2s ease;
+            cursor: grab;
+        }
+
+        .team-card:active {
+            cursor: grabbing;
+            transform: scale(0.95);
+        }
 
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
 
         /* Estilos Realistas del Campo de Fútbol */
-        .pitch-bg { background: repeating-linear-gradient(90deg, #4c962b, #4c962b 5.5%, #448924 5.5%, #448924 11%); }
-        .pitch-line { border-color: rgba(255, 255, 255, 0.75); }
-        .drop-target { background-color: rgba(255, 255, 255, 0.15) !important; border: 2px dashed white !important; }
+        .pitch-bg {
+            background: repeating-linear-gradient(90deg, #4c962b, #4c962b 5.5%, #448924 5.5%, #448924 11%);
+        }
+        .pitch-line { 
+            border-color: rgba(255, 255, 255, 0.75); 
+        }
+        .drop-target {
+            background-color: rgba(255, 255, 255, 0.15) !important;
+            border: 2px dashed white !important;
+        }
 
         /* Ocultar botón de instalar si ya es PWA */
         @media all and (display-mode: standalone) {
@@ -70,24 +87,24 @@
             -webkit-touch-callout: none;
         }
         
-        .ghost-dragging {
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5) !important;
-            transition: none !important;
-        }
-        
         #toast { z-index: 999999 !important; }
 
-        /* Barras de scroll personalizadas para desktop */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        /* Ajustes específicos para el layout móvil para evitar que la cabecera desaparezca */
+        #main-content-wrapper {
+            height: calc(100vh - 120px); /* Ajusta según la altura de tu cabecera + carrusel */
+        }
+        @media (min-width: 768px) {
+            #main-content-wrapper {
+                height: calc(100vh - 120px); /* Ajuste desktop */
+            }
+        }
     </style>
 </head>
-<body class="h-screen w-screen flex flex-col font-sans overflow-hidden text-slate-800">
+<body class="h-screen flex flex-col font-sans overflow-hidden text-slate-800">
 
     <!-- Modal de Instalación PWA -->
     <div id="install-modal" class="fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-sm hidden items-center justify-center p-4">
+        <!-- Contenido del modal PWA -->
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden transform transition-all border border-slate-100">
             <div class="bg-gradient-to-b from-atleti-blue to-slate-900 p-8 flex flex-col items-center justify-center text-center relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-full -mr-10 -mt-10"></div>
@@ -111,11 +128,12 @@
     </div>
 
     <!-- CABECERA FIJA -->
-    <header class="bg-atleti-red text-white shadow-md z-20 shrink-0 w-full flex flex-col">
+    <header class="bg-atleti-red text-white shadow-md z-20 shrink-0 w-full">
+        <!-- Fila Superior: Logo, Título y Controles -->
         <div class="w-full px-3 md:px-4 h-14 md:h-16 flex items-center justify-between">
             <div class="flex items-center space-x-2 md:space-x-3 overflow-hidden w-full">
                 <div class="w-8 h-8 md:w-10 md:h-10 bg-white rounded-full flex items-center justify-center p-0.5 md:p-1 border-2 border-white/80 shadow-md shrink-0">
-                    <img src="ESCUDO%20ATM.png" alt="ATM Logo" class="w-full h-full object-contain" onerror="this.src='[https://upload.wikimedia.org/wikipedia/en/f/f4/Atletico_Madrid_2017_logo.svg](https://upload.wikimedia.org/wikipedia/en/f/f4/Atletico_Madrid_2017_logo.svg)'">
+                    <img src="ESCUDO%20ATM.png" alt="ATM Logo" class="w-full h-full object-contain" onerror="this.src='https://upload.wikimedia.org/wikipedia/en/f/f4/Atletico_Madrid_2017_logo.svg'">
                 </div>
                 <div class="truncate flex-1">
                     <h1 class="text-base md:text-xl font-bold tracking-wide truncate">ATM GK Planer</h1>
@@ -124,9 +142,12 @@
             </div>
             
             <div class="flex items-center shrink-0 ml-2 space-x-2">
+                <!-- BOTÓN MODO VISTA (COORDINADOR) -->
                 <button id="view-mode-btn" onclick="window.toggleViewMode()" class="flex items-center justify-center w-9 h-9 md:w-10 md:h-10 rounded-full bg-white/20 hover:bg-white/30 transition-colors shadow-sm border border-white/10" title="Modo Solo Vista">
                     <i class="fa-solid fa-eye text-base md:text-lg"></i>
                 </button>
+
+                <!-- Selector de Fecha Clásico -->
                 <div class="relative cursor-pointer flex items-center justify-center w-9 h-9 md:w-10 md:h-10 rounded-full bg-white/20 hover:bg-white/30 transition-colors shadow-sm border border-white/10">
                     <i class="fa-regular fa-calendar-alt text-base md:text-lg"></i>
                     <input type="date" id="current-date" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" title="Seleccionar fecha específica" />
@@ -134,45 +155,46 @@
             </div>
         </div>
         
-        <!-- Carrusel de Fechas Rápido -->
-        <div class="bg-slate-900 border-t border-slate-700/50 h-12 md:h-14 flex items-center px-2 md:px-4 overflow-x-auto no-scrollbar shadow-inner w-full shrink-0" id="date-carousel"></div>
+        <!-- Carrusel de Fechas Rápido FIJO -->
+        <div class="bg-slate-900 border-t border-slate-700/50 h-12 md:h-14 flex items-center px-2 md:px-4 overflow-x-auto no-scrollbar shadow-inner w-full" id="date-carousel"></div>
     </header>
 
-    <!-- CONTENEDOR PRINCIPAL FLUIDO (Layout perfecto) -->
-    <main id="main-content-wrapper" class="flex-1 flex flex-col md:flex-row min-h-0 w-full relative bg-slate-800">
+    <!-- CONTENEDOR PRINCIPAL FLUIDO -->
+    <!-- Calculamos la altura para que ocupe el resto de la pantalla y permita scroll interno -->
+    <main id="main-content-wrapper" class="w-full flex flex-col md:flex-row bg-slate-800">
         
-        <!-- PANEL IZQUIERDO: SE ENCOGE AL VACIARSE EN MÓVIL -->
-        <aside id="main-sidebar" class="w-full md:w-80 bg-white flex flex-col shrink-0 md:h-full z-10 border-b border-slate-200 md:border-b-0 shadow-md transition-all duration-300">
+        <!-- Panel Izquierdo: Controles (Se colapsa en Modo Vista) -->
+        <aside id="main-sidebar" class="w-full md:w-80 bg-white shadow-md flex flex-col z-10 shrink-0 border-b border-slate-200 md:border-b-0 h-[35vh] md:h-full transition-all duration-300">
             
             <!-- Contenedor Equipos y Zona GK -->
-            <div class="p-2 md:p-4 bg-slate-50 border-b border-slate-100 flex flex-col md:flex-1 shrink-0 min-h-0">
+            <div class="p-2 md:p-4 bg-slate-50 border-b border-slate-100 flex flex-col flex-1 min-h-0">
                 <div class="flex justify-between items-center mb-2 shrink-0">
                     <h2 class="font-bold text-atleti-blue text-[10px] md:text-sm uppercase tracking-wide"><i class="fa-solid fa-users mr-1"></i> Equipos / Zona</h2>
                     <span id="unassigned-count" class="bg-slate-200 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
                 </div>
                 
-                <!-- ROW HORIZONTAL PERFECTO PARA MÓVIL -->
-                <div class="flex overflow-x-auto md:overflow-y-auto no-scrollbar pb-1 md:pb-0 w-full md:h-full" id="unassigned-teams-wrapper">
-                    <div class="flex flex-row md:flex-col gap-2 md:gap-3 w-max md:w-full items-center md:items-stretch px-1 pb-1 pt-1" id="unassigned-teams-container">
-                        
-                        <!-- Marcador GK (Compacto) -->
-                        <div id="gk-marker" draggable="true" ondragstart="window.handleGKDragStart(event)" class="touch-draggable shrink-0 px-3 w-32 md:w-full h-[48px] md:h-auto md:p-3 rounded-lg border-2 border-atleti-red bg-red-50 text-atleti-red shadow-sm flex flex-row items-center justify-center gap-2 cursor-grab transition-all border-dashed">
-                            <i class="fa-solid fa-mitten text-sm md:text-lg pointer-events-none"></i>
-                            <span class="font-bold text-[11px] md:text-sm leading-tight text-center pointer-events-none">Zona GK</span>
-                        </div>
-                        
-                        <!-- Equipos (Compactos) -->
-                        <div id="unassigned-teams" class="flex flex-row md:flex-col gap-2 md:gap-3 shrink-0" ondrop="window.handleDrop(event, 'unassigned')" ondragover="window.allowDrop(event)"></div>
+                <!-- Área desplazable de equipos -->
+                <div class="flex-1 flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto no-scrollbar space-x-2 md:space-x-0 md:space-y-3 pb-2 pt-1 items-center md:items-stretch" id="unassigned-teams-container">
+                    
+                    <!-- Marcador GK -->
+                    <!-- CLAVE: touch-draggable asignada -->
+                    <div id="gk-marker" draggable="true" ondragstart="window.handleGKDragStart(event)" class="touch-draggable shrink-0 p-1.5 md:p-3 w-28 md:w-full rounded-lg border-2 border-atleti-red bg-red-50 text-atleti-red shadow-sm flex items-center justify-center cursor-grab transition-all border-dashed">
+                        <i class="fa-solid fa-mitten text-sm md:text-lg mr-1.5"></i>
+                        <span class="font-bold text-[10px] md:text-sm leading-tight text-center pointer-events-none">Zona GK</span>
                     </div>
+                    
+                    <!-- Equipos No Asignados -->
+                    <div id="unassigned-teams" class="flex flex-row md:flex-col space-x-2 md:space-x-0 md:space-y-3 shrink-0 h-full" ondrop="window.handleDrop(event, 'unassigned')" ondragover="window.allowDrop(event)"></div>
                 </div>
             </div>
 
-            <!-- CONTROLES -->
+            <!-- CONTROLES COMPACTOS -->
             <div class="p-2 md:p-4 bg-white border-b border-slate-100 flex flex-col gap-2 shrink-0">
                 <div class="w-full flex gap-2">
                     <button onclick="window.triggerAutoAssign()" class="flex-1 bg-atleti-blue hover:bg-slate-800 text-white text-[10px] md:text-xs font-semibold py-1.5 rounded shadow transition-colors flex justify-center items-center">
                         <i class="fa-solid fa-rotate mr-1"></i> Rotar
                     </button>
+                    <!-- BOTÓN COPIAR AYER -->
                     <button onclick="window.copyFromYesterday()" class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white text-[10px] md:text-xs font-semibold py-1.5 rounded shadow transition-colors flex justify-center items-center" title="Copiar diseño del día anterior">
                         <i class="fa-solid fa-copy mr-1"></i> Copiar Ayer
                     </button>
@@ -193,7 +215,7 @@
                 </div>
             </div>
 
-            <!-- Añadir Campo Extra -->
+            <!-- Añadir Campo Extra (Solo Desktop) -->
             <div class="hidden md:block p-4 border-t border-slate-200 bg-slate-50 shrink-0">
                 <h2 class="font-bold text-atleti-blue text-xs uppercase tracking-wide mb-2"><i class="fa-solid fa-plus mr-2"></i>Añadir Campo (F7)</h2>
                 <div class="flex space-x-2">
@@ -205,8 +227,9 @@
             </div>
         </aside>
 
-        <!-- ÁREA DE CAMPOS (TOMA EL ESPACIO RESTANTE) -->
-        <section class="flex-1 flex flex-col relative min-h-0 w-full transition-all duration-300">
+        <!-- Matriz de Trabajo Específico (Área de Campos) -->
+        <section class="flex-1 flex flex-col relative w-full h-[65vh] md:h-full transition-all duration-300">
+            <!-- Barra Horarios -->
             <div class="h-10 md:h-14 border-b border-slate-700 flex items-center px-3 md:px-6 justify-between bg-slate-900 shadow-sm z-10 shrink-0 w-full">
                 <h3 class="text-[10px] md:text-lg font-semibold text-white truncate pr-2" id="display-date">Entrenamiento</h3>
                 <div class="flex space-x-1 bg-slate-800 p-0.5 md:p-1 rounded-lg border border-slate-700 shrink-0" id="time-tabs">
@@ -219,8 +242,10 @@
                 </div>
             </div>
             
-            <div class="flex-1 overflow-y-auto w-full p-3 md:p-8 no-scrollbar flex flex-col items-center space-y-6 md:space-y-10 relative pb-24" id="fields-container"></div>
+            <!-- Contenedor SCROLLABLE de los campos -->
+            <div class="flex-1 overflow-y-auto overflow-x-hidden p-3 md:p-8 no-scrollbar flex flex-col items-center space-y-6 md:space-y-10 relative pb-24 w-full" id="fields-container"></div>
             
+            <!-- Toast Notification -->
             <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 md:translate-x-0 md:left-auto md:right-6 bg-slate-800 text-white px-4 py-3 rounded-lg shadow-2xl transform transition-transform translate-y-24 opacity-0 flex items-center space-x-3 pointer-events-none z-[999999] w-[90%] md:w-auto max-w-sm">
                 <i class="fa-solid fa-circle-check text-green-400" id="toast-icon"></i>
                 <span id="toast-message" class="text-xs md:text-sm font-medium">Guardado correctamente</span>
@@ -230,18 +255,27 @@
 
     <!-- Script Principal -->
     <script type="module">
-        import { initializeApp } from "[https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js](https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js)";
-        import { getAuth, signInAnonymously } from "[https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js](https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js)";
-        import { getFirestore, doc, setDoc, onSnapshot, getDoc } from "[https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js](https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js)";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+        // CONFIGURACIÓN Y DATOS BASE CON COLORES DE CATEGORÍA
         const TEAMS = [
             { id: 't1', name: 'Prebenjamín A', categoryColor: 'bg-orange-500' },
             { id: 't2', name: 'Benjamín B', categoryColor: 'bg-blue-400' },
             { id: 't3', name: 'Benjamín A', categoryColor: 'bg-blue-400' },
             { id: 't4', name: 'Alevín A', categoryColor: 'bg-green-500' }
         ];
-        const FIELDS = [ { id: 'c3', name: 'Campo 3' }, { id: 'c4', name: 'Campo 4' } ];
-        const TIME_SLOTS = [ { id: 's1', time: '17:45 - 19:15' }, { id: 's2', time: '19:15 - 20:45' } ];
+
+        const FIELDS = [
+            { id: 'c3', name: 'Campo 3' },
+            { id: 'c4', name: 'Campo 4' }
+        ];
+
+        const TIME_SLOTS = [
+            { id: 's1', time: '17:45 - 19:15' },
+            { id: 's2', time: '19:15 - 20:45' }
+        ];
 
         let state = {
             date: new Date().toISOString().split('T')[0],
@@ -249,28 +283,37 @@
             assignments: {},   
             gkAssignments: {},
             customFields: [],
-            deletedFields: [], 
             savedDays: new Set(),
-            viewMode: false
+            viewMode: false // Modo Coordinador
         };
 
         let db, auth, appId;
         let unsubscribeSnapshot = null;
         let isOfflineMode = false;
 
-        function saveToLocalStorage(dateStr, data) { try { localStorage.setItem(`atm_gk_${dateStr}`, JSON.stringify(data)); } catch(e) {} }
+        // LOCAL STORAGE
+        function saveToLocalStorage(dateStr, data) {
+            try { localStorage.setItem(`atm_gk_${dateStr}`, JSON.stringify(data)); } catch(e) {}
+        }
+
         function loadFromLocalStorage(dateStr) {
             try {
                 const localData = localStorage.getItem(`atm_gk_${dateStr}`);
                 if (localData) {
                     const parsed = JSON.parse(localData);
-                    state.assignments = parsed.data || {}; state.gkAssignments = parsed.gkData || {}; 
-                    state.customFields = parsed.customFields || []; state.deletedFields = parsed.deletedFields || [];
-                } else { state.assignments = {}; state.gkAssignments = {}; state.customFields = []; state.deletedFields = []; }
-            } catch(e) { state.assignments = {}; state.gkAssignments = {}; state.customFields = []; state.deletedFields = []; }
+                    state.assignments = parsed.data || {};
+                    state.gkAssignments = parsed.gkData || {};
+                    state.customFields = parsed.customFields || [];
+                } else {
+                    state.assignments = {}; state.gkAssignments = {}; state.customFields = [];
+                }
+            } catch(e) {
+                state.assignments = {}; state.gkAssignments = {}; state.customFields = [];
+            }
             renderApp();
         }
 
+        // INIT FIREBASE
         async function initFirebase() {
             try {
                 let firebaseConfig;
@@ -279,48 +322,88 @@
                     appId = typeof __app_id !== 'undefined' ? __app_id : 'atletigk-local-app';
                 } else {
                     firebaseConfig = {
-                        apiKey: "AIzaSyDjq4rqhnuYt7I3PJoe_OuuZQo1G8L245I", authDomain: "trivial-atm.firebaseapp.com", projectId: "trivial-atm", storageBucket: "trivial-atm.firebasestorage.app", messagingSenderId: "461166180046", appId: "1:461166180046:web:723989976e7084ae1f429f"
+                        apiKey: "AIzaSyDjq4rqhnuYt7I3PJoe_OuuZQo1G8L245I",
+                        authDomain: "trivial-atm.firebaseapp.com",
+                        projectId: "trivial-atm",
+                        storageBucket: "trivial-atm.firebasestorage.app",
+                        messagingSenderId: "461166180046",
+                        appId: "1:461166180046:web:723989976e7084ae1f429f"
                     };
                     appId = 'atletigk-produccion';
                 }
-                const app = initializeApp(firebaseConfig); db = getFirestore(app);
-                listenToDate(state.date); listenToSavedDays(); 
-                try { auth = getAuth(app); await signInAnonymously(auth); } catch(e) {}
+                
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+
+                listenToDate(state.date);
+                listenToSavedDays(); 
+
+                try {
+                    auth = getAuth(app);
+                    await signInAnonymously(auth);
+                } catch(authErr) { console.warn("Auth silencioso ignorado por permisos."); }
+
             } catch (error) {
-                isOfflineMode = true; loadFromLocalStorage(state.date); listenToSavedDays(); 
+                isOfflineMode = true;
+                loadFromLocalStorage(state.date);
+                listenToSavedDays(); 
             }
         }
 
+        // DB OPERATIONS
         function listenToDate(dateStr) {
-            if (!db || isOfflineMode) { loadFromLocalStorage(dateStr); return; }
+            if (!db || isOfflineMode) {
+                loadFromLocalStorage(dateStr);
+                return;
+            }
             if (unsubscribeSnapshot) unsubscribeSnapshot();
+
             const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'assignments', dateStr);
+            
             try {
                 unsubscribeSnapshot = onSnapshot(docRef, (docSnap) => {
                     if (docSnap.exists()) {
-                        state.assignments = docSnap.data().data || {}; state.gkAssignments = docSnap.data().gkData || {}; 
-                        state.customFields = docSnap.data().customFields || []; state.deletedFields = docSnap.data().deletedFields || [];
+                        state.assignments = docSnap.data().data || {};
+                        state.gkAssignments = docSnap.data().gkData || {};
+                        state.customFields = docSnap.data().customFields || [];
                         saveToLocalStorage(dateStr, docSnap.data());
-                    } else { state.assignments = {}; state.gkAssignments = {}; state.customFields = []; state.deletedFields = []; }
+                    } else {
+                        state.assignments = {}; state.gkAssignments = {}; state.customFields = [];
+                    }
                     renderApp();
-                }, (error) => { isOfflineMode = true; loadFromLocalStorage(dateStr); });
-            } catch(e) { isOfflineMode = true; loadFromLocalStorage(dateStr); }
+                }, (error) => {
+                    isOfflineMode = true;
+                    loadFromLocalStorage(dateStr);
+                });
+            } catch(e) {
+                isOfflineMode = true;
+                loadFromLocalStorage(dateStr);
+            }
         }
 
         async function saveAssignments(manual = false) {
-            const hasData = Object.keys(state.assignments).length > 0 || Object.keys(state.gkAssignments || {}).length > 0 || (state.customFields && state.customFields.length > 0) || (state.deletedFields && state.deletedFields.length > 0);
-            const dataToSave = { data: state.assignments, gkData: state.gkAssignments || {}, customFields: state.customFields || [], deletedFields: state.deletedFields || [], hasData: hasData };
+            const hasData = Object.keys(state.assignments).length > 0 || Object.keys(state.gkAssignments || {}).length > 0 || (state.customFields && state.customFields.length > 0);
+            const dataToSave = { 
+                data: state.assignments, gkData: state.gkAssignments || {}, customFields: state.customFields || [], hasData: hasData 
+            };
+
             saveToLocalStorage(state.date, dataToSave);
             if (hasData) state.savedDays.add(state.date); else state.savedDays.delete(state.date);
             renderDateCarousel();
 
-            if (!db || isOfflineMode) { if (manual) window.showToast('Guardado local', 'success'); return; }
+            if (!db || isOfflineMode) {
+                if (manual) window.showToast('Guardado en local', 'success');
+                return;
+            }
             
             const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'assignments', state.date);
             try {
                 await setDoc(docRef, dataToSave);
                 if (manual) window.showToast('Planificación guardada');
-            } catch (e) { isOfflineMode = true; if (manual) window.showToast("Guardado local", "success"); }
+            } catch (e) {
+                isOfflineMode = true;
+                if (manual) window.showToast("Guardado en local", "success");
+            }
         }
 
         function listenToSavedDays() {
@@ -328,89 +411,152 @@
                 const key = localStorage.key(i);
                 if (key && key.startsWith('atm_gk_')) {
                     const dStr = key.replace('atm_gk_', '');
-                    try { const localData = JSON.parse(localStorage.getItem(key)); if (localData && localData.hasData) state.savedDays.add(dStr); } catch(e) {}
+                    try {
+                        const localData = JSON.parse(localStorage.getItem(key));
+                        if (localData && localData.hasData) state.savedDays.add(dStr);
+                    } catch(e) {}
                 }
             }
             renderDateCarousel();
+
             if (!db || isOfflineMode) return;
             const today = new Date();
             for(let i = -7; i <= 7; i++) {
-                const d = new Date(today); d.setDate(today.getDate() + i); const dStr = d.toISOString().split('T')[0];
+                const d = new Date(today);
+                d.setDate(today.getDate() + i);
+                const dStr = d.toISOString().split('T')[0];
                 if(dStr !== state.date) { 
                     const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'assignments', dStr);
-                    getDoc(docRef).then(snap => { if(snap.exists() && snap.data().hasData) { state.savedDays.add(dStr); renderDateCarousel(); } }).catch(() => {}); 
+                    getDoc(docRef).then(snap => {
+                        if(snap.exists() && snap.data().hasData) {
+                            state.savedDays.add(dStr); renderDateCarousel(); 
+                        }
+                    }).catch(() => {}); 
                 }
             }
         }
 
+        // MODO VISTA (COORDINADOR)
         window.toggleViewMode = () => {
             state.viewMode = !state.viewMode;
-            const sidebar = document.getElementById('main-sidebar'); const toggleBtn = document.getElementById('view-mode-btn');
+            const sidebar = document.getElementById('main-sidebar');
+            const toggleBtn = document.getElementById('view-mode-btn');
+            
+            // Buscar contenedor de campos para ajustar altura dinámicamente
+            const section = document.querySelector('section');
+
             if (state.viewMode) {
                 sidebar.classList.add('hidden');
-                toggleBtn.innerHTML = '<i class="fa-solid fa-eye-slash text-base md:text-lg"></i>'; toggleBtn.classList.add('bg-atleti-blue', 'border-transparent'); toggleBtn.classList.remove('bg-white/20');
-                window.showToast('Modo Vista');
+                section.classList.remove('h-[65vh]');
+                section.classList.add('h-full'); // Ocupa todo al colapsar el menú
+                toggleBtn.innerHTML = '<i class="fa-solid fa-eye-slash text-base md:text-lg"></i>';
+                toggleBtn.classList.add('bg-atleti-blue', 'border-transparent');
+                toggleBtn.classList.remove('bg-white/20');
+                window.showToast('Modo Vista Activado');
             } else {
                 sidebar.classList.remove('hidden');
-                toggleBtn.innerHTML = '<i class="fa-solid fa-eye text-base md:text-lg"></i>'; toggleBtn.classList.remove('bg-atleti-blue', 'border-transparent'); toggleBtn.classList.add('bg-white/20');
-                window.showToast('Modo Edición');
+                section.classList.remove('h-full');
+                section.classList.add('h-[65vh]'); // Vuelve a su tamaño compartido en móvil
+                toggleBtn.innerHTML = '<i class="fa-solid fa-eye text-base md:text-lg"></i>';
+                toggleBtn.classList.remove('bg-atleti-blue', 'border-transparent');
+                toggleBtn.classList.add('bg-white/20');
+                window.showToast('Modo Edición Activado');
             }
             renderApp();
         };
 
+        // COPIAR DEL DÍA ANTERIOR
         window.copyFromYesterday = async () => {
-            const dateObj = new Date(state.date); dateObj.setDate(dateObj.getDate() - 1); const prevDateStr = dateObj.toISOString().split('T')[0];
+            const dateObj = new Date(state.date);
+            dateObj.setDate(dateObj.getDate() - 1);
+            const prevDateStr = dateObj.toISOString().split('T')[0];
+            
             let dataFound = false;
+
+            // 1. Buscar en Firebase
             if (db && !isOfflineMode) {
-                try { const snap = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'assignments', prevDateStr));
-                    if (snap.exists() && snap.data().hasData) { 
-                        state.assignments = snap.data().data || {}; state.gkAssignments = snap.data().gkData || {}; 
-                        state.customFields = snap.data().customFields || []; state.deletedFields = snap.data().deletedFields || []; 
-                        dataFound = true; 
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'assignments', prevDateStr);
+                    const snap = await getDoc(docRef);
+                    if (snap.exists() && snap.data().hasData) {
+                        state.assignments = snap.data().data || {};
+                        state.gkAssignments = snap.data().gkData || {};
+                        state.customFields = snap.data().customFields || [];
+                        dataFound = true;
                     }
                 } catch(e) {}
             }
+
+            // 2. Buscar en LocalStorage si falla Firebase
             if (!dataFound) {
-                try { const localData = localStorage.getItem(`atm_gk_${prevDateStr}`);
-                    if (localData) { const parsed = JSON.parse(localData); if (parsed.hasData) { 
-                        state.assignments = parsed.data || {}; state.gkAssignments = parsed.gkData || {}; 
-                        state.customFields = parsed.customFields || []; state.deletedFields = parsed.deletedFields || []; 
-                        dataFound = true; 
-                    } }
+                try {
+                    const localData = localStorage.getItem(`atm_gk_${prevDateStr}`);
+                    if (localData) {
+                        const parsed = JSON.parse(localData);
+                        if (parsed.hasData) {
+                            state.assignments = parsed.data || {};
+                            state.gkAssignments = parsed.gkData || {};
+                            state.customFields = parsed.customFields || [];
+                            dataFound = true;
+                        }
+                    }
                 } catch(e) {}
             }
-            if (dataFound) { renderApp(); saveAssignments(); window.showToast('Esquema copiado', 'success'); } else window.showToast('No hay datos de ayer', 'error');
+
+            if (dataFound) {
+                renderApp();
+                saveAssignments();
+                window.showToast('Esquema copiado del día anterior', 'success');
+            } else {
+                window.showToast('No hay entrenamiento registrado ayer', 'error');
+            }
         };
 
         window.manualSave = () => { saveAssignments(true); };
 
-        function renderApp() { renderGrid(); renderTeams(); }
+        // RENDERIZADO
+        function renderApp() {
+            renderGrid();
+            renderTeams();
+        }
 
         function renderGrid() {
-            const container = document.getElementById('fields-container'); container.innerHTML = ''; 
-            
-            const baseFields = FIELDS.filter(f => !(state.deletedFields || []).includes(f.id));
-            const allFields = [...baseFields, ...(state.customFields || [])];
+            const container = document.getElementById('fields-container');
+            container.innerHTML = ''; 
+            const allFields = [...FIELDS, ...(state.customFields || [])];
 
             allFields.forEach(field => {
-                const deleteBtn = (!state.viewMode) ? `<button onclick="window.deleteField('${field.id}')" class="ml-3 text-red-300 hover:text-red-500 transition-colors" title="Eliminar campo"><i class="fa-solid fa-trash"></i></button>` : '';
+                const isCustom = field.id.startsWith('c-ext-');
+                const deleteBtn = (isCustom && !state.viewMode) ? `<button onclick="window.deleteCustomField('${field.id}')" class="ml-3 text-red-300 hover:text-red-500 transition-colors" title="Eliminar campo"><i class="fa-solid fa-trash"></i></button>` : '';
 
                 const fieldHTML = `
                     <div class="w-full max-w-4xl flex flex-col items-center">
-                        <h4 class="text-white font-bold mb-2 md:mb-3 flex items-center text-[11px] md:text-xl drop-shadow-md bg-slate-800/80 px-3 md:px-4 py-0.5 md:py-1 rounded-full border border-slate-600"><i class="fa-solid fa-map-location-dot mr-1.5 md:mr-2 text-atleti-red"></i> ${field.name} ${deleteBtn}</h4>
+                        <h4 class="text-white font-bold mb-2 md:mb-3 flex items-center text-[11px] md:text-xl drop-shadow-md bg-slate-800/80 px-3 md:px-4 py-0.5 md:py-1 rounded-full border border-slate-600">
+                            <i class="fa-solid fa-map-location-dot mr-1.5 md:mr-2 text-atleti-red"></i> ${field.name} ${deleteBtn}
+                        </h4>
+                        
                         <div class="relative w-full h-40 md:h-80 pitch-bg rounded-lg border-2 md:border-4 pitch-line shadow-[0_10px_30px_rgba(0,0,0,0.5)] flex">
                             <div class="absolute inset-0 pointer-events-none opacity-80 z-0">
-                                <div class="absolute top-0 bottom-0 left-1/2 w-0 pitch-line border-l-2 -translate-x-1/2"></div><div class="absolute top-1/2 left-1/2 w-[22%] aspect-square max-w-[140px] max-h-[140px] rounded-full pitch-line border-2 -translate-x-1/2 -translate-y-1/2"></div><div class="absolute top-1/2 left-1/2 w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-white -translate-x-1/2 -translate-y-1/2"></div><div class="absolute top-1/2 left-0 w-[16%] h-[55%] pitch-line border-2 border-l-0 -translate-y-1/2"></div><div class="absolute top-1/2 left-0 w-[5%] h-[25%] pitch-line border-2 border-l-0 -translate-y-1/2"></div><div class="absolute top-1/2 left-[16%] w-[6%] h-[28%] pitch-line border-2 border-l-0 rounded-r-full -translate-y-1/2"></div><div class="absolute top-1/2 right-0 w-[16%] h-[55%] pitch-line border-2 border-r-0 -translate-y-1/2"></div><div class="absolute top-1/2 right-0 w-[5%] h-[25%] pitch-line border-2 border-r-0 -translate-y-1/2"></div><div class="absolute top-1/2 right-[16%] w-[6%] h-[28%] pitch-line border-2 border-r-0 rounded-l-full -translate-y-1/2"></div>
+                                <div class="absolute top-0 bottom-0 left-1/2 w-0 pitch-line border-l-2 -translate-x-1/2"></div>
+                                <div class="absolute top-1/2 left-1/2 w-[22%] aspect-square max-w-[140px] max-h-[140px] rounded-full pitch-line border-2 -translate-x-1/2 -translate-y-1/2"></div>
+                                <div class="absolute top-1/2 left-1/2 w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-white -translate-x-1/2 -translate-y-1/2"></div>
+                                <div class="absolute top-1/2 left-0 w-[16%] h-[55%] pitch-line border-2 border-l-0 -translate-y-1/2"></div>
+                                <div class="absolute top-1/2 left-0 w-[5%] h-[25%] pitch-line border-2 border-l-0 -translate-y-1/2"></div>
+                                <div class="absolute top-1/2 left-[16%] w-[6%] h-[28%] pitch-line border-2 border-l-0 rounded-r-full -translate-y-1/2"></div>
+                                <div class="absolute top-1/2 right-0 w-[16%] h-[55%] pitch-line border-2 border-r-0 -translate-y-1/2"></div>
+                                <div class="absolute top-1/2 right-0 w-[5%] h-[25%] pitch-line border-2 border-r-0 -translate-y-1/2"></div>
+                                <div class="absolute top-1/2 right-[16%] w-[6%] h-[28%] pitch-line border-2 border-r-0 rounded-l-full -translate-y-1/2"></div>
                             </div>
+
                             <div class="w-1/2 h-full relative z-10 p-1 md:p-4 flex flex-col justify-center items-end" id="${field.id}-izq-container">
                                 <div id="${field.id}-izq-gk-zone" class="absolute left-0 top-1/2 -translate-y-1/2 w-[40%] md:w-[35%] h-[75%] md:h-[65%] rounded-r-xl border-2 border-dashed border-transparent transition-all flex items-center justify-center overflow-visible z-20 hidden"></div>
-                                <div id="${field.id}-izq" class="dropzone-area w-[90%] md:w-[85%] h-full rounded-xl border-2 border-dashed border-transparent transition-all flex items-center justify-center relative overflow-hidden" ondrop="${state.viewMode ? '' : `window.handleDrop(event, '${field.id}-izq')`}" ondragover="${state.viewMode ? '' : 'window.allowDrop(event)'}" ondragenter="${state.viewMode ? '' : 'window.dragEnter(event)'}" ondragleave="${state.viewMode ? '' : 'window.dragLeave(event)'}">
+                                <div id="${field.id}-izq" class="w-[90%] md:w-[85%] h-full rounded-xl border-2 border-dashed border-transparent transition-all flex items-center justify-center relative overflow-hidden" ondrop="${state.viewMode ? '' : `window.handleDrop(event, '${field.id}-izq')`}" ondragover="${state.viewMode ? '' : 'window.allowDrop(event)'}" ondragenter="${state.viewMode ? '' : 'window.dragEnter(event)'}" ondragleave="${state.viewMode ? '' : 'window.dragLeave(event)'}">
                                      <span class="text-white/80 text-[8px] md:text-sm font-bold tracking-widest uppercase pointer-events-none bg-black/40 px-1.5 md:px-4 py-0.5 md:py-2 rounded-full backdrop-blur-sm z-0 text-center">Portería Izquierda</span>
                                 </div>
                             </div>
                             <div class="w-1/2 h-full relative z-10 p-1 md:p-4 flex flex-col justify-center items-start" id="${field.id}-der-container">
                                 <div id="${field.id}-der-gk-zone" class="absolute right-0 top-1/2 -translate-y-1/2 w-[40%] md:w-[35%] h-[75%] md:h-[65%] rounded-l-xl border-2 border-dashed border-transparent transition-all flex items-center justify-center overflow-visible z-20 hidden"></div>
-                                <div id="${field.id}-der" class="dropzone-area w-[90%] md:w-[85%] h-full rounded-xl border-2 border-dashed border-transparent transition-all flex items-center justify-center relative overflow-hidden" ondrop="${state.viewMode ? '' : `window.handleDrop(event, '${field.id}-der')`}" ondragover="${state.viewMode ? '' : 'window.allowDrop(event)'}" ondragenter="${state.viewMode ? '' : 'window.dragEnter(event)'}" ondragleave="${state.viewMode ? '' : 'window.dragLeave(event)'}">
+                                <div id="${field.id}-der" class="w-[90%] md:w-[85%] h-full rounded-xl border-2 border-dashed border-transparent transition-all flex items-center justify-center relative overflow-hidden" ondrop="${state.viewMode ? '' : `window.handleDrop(event, '${field.id}-der')`}" ondragover="${state.viewMode ? '' : 'window.allowDrop(event)'}" ondragenter="${state.viewMode ? '' : 'window.dragEnter(event)'}" ondragleave="${state.viewMode ? '' : 'window.dragLeave(event)'}">
                                      <span class="text-white/80 text-[8px] md:text-sm font-bold tracking-widest uppercase pointer-events-none bg-black/40 px-1.5 md:px-4 py-0.5 md:py-2 rounded-full backdrop-blur-sm z-0 text-center">Portería Derecha</span>
                                 </div>
                             </div>
@@ -426,52 +572,70 @@
             unassignedContainer.innerHTML = '';
             
             document.querySelectorAll('.pitch-bg div[id]').forEach(zone => {
-                const teamCards = zone.querySelectorAll('.team-card-on-pitch'); teamCards.forEach(card => card.remove());
+                const teamCards = zone.querySelectorAll('.team-card-on-pitch');
+                teamCards.forEach(card => card.remove());
                 const span = zone.querySelector('span'); if(span) span.style.display = 'block'; 
                 zone.classList.remove('border-white/50', 'bg-black/30');
             });
             
             document.querySelectorAll('div[id$="-gk-zone"]').forEach(zone => {
-                zone.classList.add('hidden'); zone.classList.remove('ring-4', 'ring-atleti-red', 'ring-inset', 'bg-atleti-red/20'); zone.innerHTML = ''; 
+                zone.classList.add('hidden');
+                zone.classList.remove('ring-4', 'ring-atleti-red', 'ring-inset', 'bg-atleti-red/20');
+                zone.innerHTML = ''; 
             });
 
             let unassignedCount = 0;
 
             TEAMS.forEach(team => {
-                const card = document.createElement('div'); card.id = `team-${team.id}`;
-                if (!state.viewMode) { card.draggable = true; card.ondragstart = window.handleDragStart; card.classList.add('touch-draggable'); }
+                const card = document.createElement('div');
+                card.id = `team-${team.id}`;
+                
+                // Si no estamos en modo vista, se puede arrastrar
+                if (!state.viewMode) {
+                    card.draggable = true;
+                    card.ondragstart = window.handleDragStart;
+                    card.classList.add('touch-draggable'); // CLAVE: Añadir clase para touch en equipos
+                }
                 
                 const activeSuffix = `-${state.activeSlot}`;
                 const assignedKey = Object.keys(state.assignments).find(key => state.assignments[key] === team.id && key.endsWith(activeSuffix));
-                const categoryDot = `<div class="absolute top-0 right-0 w-3 h-3 md:w-4 md:h-4 rounded-full ${team.categoryColor} border-[1.5px] border-white shadow-sm z-30 pointer-events-none"></div>`;
+
+                // Indicador de color de categoría
+                const categoryDot = `<div class="absolute -top-1 -right-1 w-3 h-3 md:w-4 md:h-4 rounded-full ${team.categoryColor} border-2 border-white shadow-sm z-30"></div>`;
 
                 if (assignedKey) {
-                    const spaceId = assignedKey.replace(activeSuffix, ''); const targetZone = document.getElementById(spaceId);
+                    const spaceId = assignedKey.replace(activeSuffix, '');
+                    const targetZone = document.getElementById(spaceId);
+                    
                     if (targetZone) {
                         const span = targetZone.querySelector('span'); if(span) span.style.display = 'none';
-                        card.className = `${state.viewMode ? '' : 'touch-draggable cursor-grab hover:scale-105'} team-card-on-pitch w-[90%] max-w-[180px] p-2 rounded-xl border border-white/30 bg-atleti-blue/95 text-white shadow-[0_8px_15px_rgba(0,0,0,0.4)] backdrop-blur-sm flex flex-col md:flex-row items-center justify-center gap-1 md:gap-3 z-20 absolute transition-transform`;
+                        // CLAVE: Asegurar touch-draggable en campos
+                        card.className = `touch-draggable ${state.viewMode ? '' : 'cursor-grab transform hover:scale-105'} team-card-on-pitch w-[95%] md:w-[90%] max-w-[200px] p-1.5 md:p-4 rounded-xl border border-white/30 bg-atleti-blue/95 text-white shadow-[0_8px_15px_rgba(0,0,0,0.4)] backdrop-blur-sm flex flex-col md:flex-row items-center justify-center md:space-x-3 z-20 absolute`;
                         card.innerHTML = `
                             <div class="relative pointer-events-none">
-                                <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white flex items-center justify-center shadow-inner p-1 shrink-0">
-                                    <img src="ESCUDO%20ATM.png" class="w-full h-full object-contain" onerror="this.style.display='none';">
+                                <div class="w-6 h-6 md:w-12 md:h-12 rounded-full bg-white flex items-center justify-center shadow-inner p-1 shrink-0">
+                                    <img src="ESCUDO%20ATM.png" alt="Atleti" class="w-full h-full object-contain drop-shadow-sm" onerror="this.style.display='none';">
                                 </div>
                                 ${categoryDot}
                             </div>
-                            <p class="font-bold text-[9px] md:text-xs text-center md:text-left leading-tight drop-shadow-md pointer-events-none">${team.name}</p>
+                            <p class="font-bold text-[9px] md:text-sm text-center md:text-left leading-tight drop-shadow-md tracking-wide mt-1 md:mt-0 pointer-events-none">${team.name}</p>
                         `;
                         targetZone.appendChild(card); targetZone.classList.add('bg-black/20');
                     }
                 } else {
-                    card.className = `drop-shadow-sm ${state.viewMode ? '' : 'touch-draggable cursor-grab hover:border-atleti-red/50'} team-card p-1.5 md:p-3 w-36 md:w-full shrink-0 h-[48px] md:h-auto rounded-lg border border-slate-200 bg-white text-slate-700 flex flex-row items-center gap-2 md:gap-3 transition-colors relative`;
+                    // CLAVE: Asegurar touch-draggable en panel. REDUCIDO PADDING Y H-FIT EN MÓVIL
+                    card.className = `touch-draggable ${state.viewMode ? '' : 'cursor-grab group hover:border-atleti-red/50'} team-card p-1.5 md:p-3 w-28 md:w-full shrink-0 h-fit rounded-lg border border-slate-200 bg-white text-slate-700 shadow-sm flex flex-col md:flex-row items-center md:justify-between`;
                     card.innerHTML = `
-                        <div class="relative shrink-0 pointer-events-none">
-                            <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center p-1">
-                                <img src="ESCUDO%20ATM.png" class="w-full h-full object-contain" onerror="this.style.display='none';">
+                        <div class="flex flex-col md:flex-row items-center space-y-1 md:space-y-0 md:space-x-3 pointer-events-none w-full">
+                            <div class="relative shrink-0 pointer-events-none">
+                                <div class="w-6 h-6 md:w-10 md:h-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center group-hover:bg-red-50 transition-colors p-1">
+                                    <img src="ESCUDO%20ATM.png" alt="Atleti" class="w-full h-full object-contain drop-shadow-sm" onerror="this.style.display='none';">
+                                </div>
+                                ${categoryDot}
                             </div>
-                            ${categoryDot}
+                            <p class="font-bold text-[9px] md:text-sm leading-tight text-center md:text-left truncate w-full pointer-events-none">${team.name}</p>
                         </div>
-                        <p class="font-bold text-[10px] md:text-sm leading-tight text-left truncate flex-1 pointer-events-none">${team.name}</p>
-                        ${state.viewMode ? '' : '<i class="hidden md:block fa-solid fa-grip-vertical text-slate-300 pointer-events-none shrink-0 ml-1"></i>'}
+                        ${state.viewMode ? '' : '<i class="hidden md:block fa-solid fa-grip-vertical text-slate-300 group-hover:text-atleti-red pointer-events-none transition-colors shrink-0"></i>'}
                     `;
                     unassignedContainer.appendChild(card); unassignedCount++;
                 }
@@ -480,102 +644,210 @@
             if (state.gkAssignments) {
                 Object.keys(state.gkAssignments).forEach(key => {
                     if (key.endsWith(`-${state.activeSlot}`) && state.gkAssignments[key]) {
-                        const spaceId = key.replace(`-${state.activeSlot}`, ''); const gkZone = document.getElementById(`${spaceId}-gk-zone`);
-                        if (gkZone) { gkZone.classList.remove('hidden'); gkZone.classList.add('ring-4', 'ring-atleti-red', 'ring-inset', 'bg-atleti-red/20'); gkZone.appendChild(createBadge(key)); }
+                        const spaceId = key.replace(`-${state.activeSlot}`, '');
+                        const gkZoneId = `${spaceId}-gk-zone`;
+                        const gkZone = document.getElementById(gkZoneId);
+                        if (gkZone) {
+                            gkZone.classList.remove('hidden'); gkZone.classList.add('ring-4', 'ring-atleti-red', 'ring-inset', 'bg-atleti-red/20');
+                            const badge = createBadge(key); gkZone.appendChild(badge);
+                        }
                     }
                 });
             }
             document.getElementById('unassigned-count').innerText = unassignedCount;
+            
+            // CLAVE: Asignar eventos táctiles DESPUÉS de renderizar elementos nuevos
+            if (!state.viewMode) {
+                window.attachTouchListeners();
+            }
         }
 
         function createBadge(key) {
+            // Ciclo de tareas: T1-T2-T3 -> T1-T2 -> T1 -> T3
             let currentOptionIndex = 0;
-            const taskOptions = [ ['T1', 'T2', 'T3'], ['T1', 'T2'], ['T1'], ['T3'] ];
+            const taskOptions = [
+                ['T1', 'T2', 'T3'],      
+                ['T1', 'T2'],            
+                ['T1'],                  
+                ['T3']                   
+            ];
+
             let tasks = state.gkAssignments[key];
-            if (tasks === true || !Array.isArray(tasks)) { tasks = taskOptions[0]; state.gkAssignments[key] = tasks; } else {
-                const tasksStr = tasks.join('-'); currentOptionIndex = taskOptions.findIndex(opt => opt.join('-') === tasksStr); if (currentOptionIndex === -1) currentOptionIndex = 0; 
+            
+            if (tasks === true || !Array.isArray(tasks)) {
+                tasks = taskOptions[0];
+                state.gkAssignments[key] = tasks;
+            } else {
+                const tasksStr = tasks.join('-');
+                currentOptionIndex = taskOptions.findIndex(opt => opt.join('-') === tasksStr);
+                if (currentOptionIndex === -1) currentOptionIndex = 0; 
             }
 
             const badge = document.createElement('div');
             badge.className = `gk-badge-overlay absolute -top-8 md:-top-10 left-1/2 -translate-x-1/2 bg-atleti-red text-white font-bold px-2.5 py-1.5 md:px-4 md:py-2 rounded-xl shadow-xl z-[40] flex flex-col items-center border border-white/40 w-max transition-all ${state.viewMode ? '' : 'hover:bg-red-700 cursor-pointer'}`;
             
-            const header = document.createElement('div'); header.className = 'flex items-center justify-center w-full text-[10px] md:text-xs tracking-wide pointer-events-none mb-0.5'; header.innerHTML = `<span><i class="fa-solid fa-mitten mr-1.5"></i> ZONA GK</span>`;
-            const tasksDisplay = document.createElement('div'); tasksDisplay.className = 'text-[11px] md:text-sm text-red-100 font-extrabold tracking-widest pointer-events-none'; tasksDisplay.innerText = tasks.join(' - ');
-            badge.appendChild(header); badge.appendChild(tasksDisplay);
+            const header = document.createElement('div');
+            header.className = 'flex items-center justify-center w-full text-[10px] md:text-xs tracking-wide pointer-events-none mb-0.5';
+            header.innerHTML = `<span><i class="fa-solid fa-mitten mr-1.5"></i> ZONA GK</span>`;
+            
+            const tasksDisplay = document.createElement('div');
+            tasksDisplay.className = 'text-[11px] md:text-sm text-red-100 font-extrabold tracking-widest pointer-events-none';
+            tasksDisplay.innerText = tasks.join(' - ');
+
+            badge.appendChild(header);
+            badge.appendChild(tasksDisplay);
 
             if (!state.viewMode) {
-                const closeBtn = document.createElement('i'); closeBtn.className = 'fa-solid fa-circle-xmark absolute -top-2 -right-2 bg-slate-900 text-white rounded-full border border-slate-700 cursor-pointer hover:text-red-400 hover:scale-110 transition-all text-xs md:text-sm shadow-md p-0.5';
-                closeBtn.onclick = (e) => { e.stopPropagation(); delete state.gkAssignments[key]; renderTeams(); saveAssignments(); }; badge.appendChild(closeBtn);
-                badge.onclick = (e) => { e.stopPropagation(); currentOptionIndex = (currentOptionIndex + 1) % taskOptions.length; state.gkAssignments[key] = taskOptions[currentOptionIndex]; tasksDisplay.innerText = state.gkAssignments[key].join(' - '); saveAssignments(); };
+                const closeBtn = document.createElement('i');
+                closeBtn.className = 'fa-solid fa-circle-xmark absolute -top-2 -right-2 bg-slate-900 text-white rounded-full border border-slate-700 cursor-pointer hover:text-red-400 hover:scale-110 transition-all text-xs md:text-sm shadow-md p-0.5';
+                
+                closeBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    delete state.gkAssignments[key];
+                    renderTeams();
+                    saveAssignments();
+                };
+                badge.appendChild(closeBtn);
+
+                badge.onclick = (e) => {
+                    e.stopPropagation();
+                    currentOptionIndex = (currentOptionIndex + 1) % taskOptions.length;
+                    state.gkAssignments[key] = taskOptions[currentOptionIndex];
+                    tasksDisplay.innerText = state.gkAssignments[key].join(' - ');
+                    saveAssignments();
+                };
             }
+            
             return badge;
         }
 
+        // ==========================================
+        // LÓGICA DE PESTAÑAS (HORARIOS)
+        // ==========================================
         window.setTimeSlot = (slotId) => {
             state.activeSlot = slotId;
             TIME_SLOTS.forEach(slot => {
                 const btn = document.getElementById(`tab-${slot.id}`);
-                if(slot.id === slotId) { btn.classList.add('bg-atleti-red', 'text-white', 'shadow-sm'); btn.classList.remove('text-slate-400', 'hover:text-white', 'hover:bg-slate-700'); } 
-                else { btn.classList.remove('bg-atleti-red', 'text-white', 'shadow-sm'); btn.classList.add('text-slate-400', 'hover:text-white', 'hover:bg-slate-700'); }
+                if(slot.id === slotId) {
+                    btn.classList.add('bg-atleti-red', 'text-white', 'shadow-sm'); btn.classList.remove('text-slate-400', 'hover:text-white', 'hover:bg-slate-700');
+                } else {
+                    btn.classList.remove('bg-atleti-red', 'text-white', 'shadow-sm'); btn.classList.add('text-slate-400', 'hover:text-white', 'hover:bg-slate-700');
+                }
             });
             renderTeams(); 
         };
 
-        // DESKTOP D&D
+        // ==========================================
+        // DRAG & DROP (DESKTOP)
+        // ==========================================
         window.allowDrop = (ev) => ev.preventDefault();
-        window.dragEnter = (ev) => { ev.preventDefault(); const target = ev.target.closest('.dropzone-area'); if (target) target.classList.add('drop-target'); };
-        window.dragLeave = (ev) => { const target = ev.target.closest('.dropzone-area'); if (target) target.classList.remove('drop-target'); };
+        window.dragEnter = (ev) => { ev.preventDefault(); const target = ev.target.closest('.pitch-bg div[id]'); if (target) target.classList.add('drop-target'); };
+        window.dragLeave = (ev) => { const target = ev.target.closest('.pitch-bg div[id]'); if (target) target.classList.remove('drop-target'); };
         window.handleGKDragStart = (ev) => { ev.dataTransfer.setData("gkMarker", "true"); ev.target.style.opacity = '0.4'; ev.target.addEventListener('dragend', (e) => { e.target.style.opacity = '1'; document.querySelectorAll('.drop-target').forEach(el => el.classList.remove('drop-target')); }, {once: true}); };
         window.handleDragStart = (ev) => { ev.dataTransfer.setData("teamId", ev.target.closest('div[id^="team-"]').id.replace('team-', '')); ev.target.style.opacity = '0.4'; ev.target.addEventListener('dragend', (e) => { e.target.style.opacity = '1'; document.querySelectorAll('.drop-target').forEach(el => el.classList.remove('drop-target')); }, {once: true}); };
+
         window.handleDrop = (ev, spaceId) => {
-            ev.preventDefault(); document.querySelectorAll('.drop-target').forEach(el => el.classList.remove('drop-target'));
+            ev.preventDefault();
+            document.querySelectorAll('.drop-target').forEach(el => el.classList.remove('drop-target'));
             const fullKey = spaceId !== 'unassigned' ? `${spaceId}-${state.activeSlot}` : null;
             const isGkMarker = ev.dataTransfer.getData("gkMarker");
             
             if (isGkMarker === "true") {
-                if (fullKey) { if (!state.gkAssignments) state.gkAssignments = {}; if(!state.gkAssignments[fullKey]) state.gkAssignments[fullKey] = ['T1', 'T2', 'T3']; renderTeams(); saveAssignments(); } return;
+                if (fullKey) { 
+                    if (!state.gkAssignments) state.gkAssignments = {}; 
+                    if(!state.gkAssignments[fullKey]) state.gkAssignments[fullKey] = ['T1', 'T2', 'T3']; 
+                    renderTeams(); 
+                    saveAssignments(); 
+                }
+                return;
             }
-            const teamId = ev.dataTransfer.getData("teamId"); if (!teamId) return;
+
+            const teamId = ev.dataTransfer.getData("teamId");
+            if (!teamId) return;
+
             for (let key in state.assignments) { if (state.assignments[key] === teamId && key.endsWith(`-${state.activeSlot}`)) delete state.assignments[key]; }
-            if (fullKey) { if (state.assignments[fullKey] && state.assignments[fullKey] !== teamId) { window.showToast('Esta portería ya está ocupada', 'error'); return; } state.assignments[fullKey] = teamId; }
+            if (fullKey) {
+                if (state.assignments[fullKey] && state.assignments[fullKey] !== teamId) { window.showToast('Esta portería ya está ocupada', 'error'); return; }
+                state.assignments[fullKey] = teamId;
+            }
             renderTeams(); saveAssignments();
         };
 
-        // TOUCH D&D (MOTOR GLOBAL ROBUSTO)
-        let isDragging = false;
-        
-        window.initTouchDragAndDrop = () => {
-            document.addEventListener('touchstart', window.handleTouchStart, { passive: false });
-            document.addEventListener('touchmove', window.handleTouchMove, { passive: false });
-            document.addEventListener('touchend', window.handleTouchEnd, { passive: false });
-            document.addEventListener('touchcancel', window.handleTouchEnd, { passive: false });
+        // ==========================================
+        // TOUCH SUPPORT (MÓVIL & TABLET)
+        // ==========================================
+        window.draggedItem = null; 
+        window.ghostEl = null; 
+        window.gkMarkerTouch = false; 
+        window.currentDropZone = null; 
+        window.touchOffsetX = 0; 
+        window.touchOffsetY = 0;
+
+        window.attachTouchListeners = () => {
+            if (state.viewMode) return; 
+            
+            document.querySelectorAll('.touch-draggable').forEach(el => {
+                // Eliminar antiguos para evitar duplicados
+                el.removeEventListener('touchstart', window.handleTouchStart); 
+                el.removeEventListener('touchmove', window.handleTouchMove); 
+                el.removeEventListener('touchend', window.handleTouchEnd); 
+                el.removeEventListener('touchcancel', window.handleTouchEnd);
+                
+                // Asignar nuevos con passive: false para permitir preventDefault y bloquear el scroll de pantalla al arrastrar
+                el.addEventListener('touchstart', window.handleTouchStart, { passive: false }); 
+                el.addEventListener('touchmove', window.handleTouchMove, { passive: false }); 
+                el.addEventListener('touchend', window.handleTouchEnd, { passive: false }); 
+                el.addEventListener('touchcancel', window.handleTouchEnd, { passive: false });
+            });
         };
 
         window.handleTouchStart = (ev) => {
             if (state.viewMode) return;
             const target = ev.target.closest('.touch-draggable'); if (!target) return;
             
-            isDragging = true; window.draggedItem = target; window.gkMarkerTouch = (target.id === 'gk-marker'); window.currentDropZone = null;
-            const touch = ev.touches[0]; const rect = target.getBoundingClientRect();
-            window.touchOffsetX = touch.clientX - rect.left; window.touchOffsetY = touch.clientY - rect.top;
+            window.draggedItem = target; 
+            window.gkMarkerTouch = (target.id === 'gk-marker'); 
+            window.currentDropZone = null;
             
+            const touch = ev.touches[0]; 
+            const rect = target.getBoundingClientRect();
+            
+            // Calculamos el offset para que la tarjeta no salte
+            window.touchOffsetX = touch.clientX - rect.left; 
+            window.touchOffsetY = touch.clientY - rect.top;
+            
+            // Creamos el clon fantasma
             window.ghostEl = target.cloneNode(true);
-            window.ghostEl.classList.remove('relative', 'transform', 'hover:scale-105', 'hover:border-atleti-red/50');
-            window.ghostEl.classList.add('ghost-dragging');
             
-            Object.assign(window.ghostEl.style, { position: 'fixed', zIndex: '999999', opacity: '0.9', pointerEvents: 'none', width: rect.width + 'px', height: rect.height + 'px', margin: '0', left: '0px', top: '0px', transformOrigin: 'top left' });
+            // Limpieza de clases y aplicación forzada de estilos
+            window.ghostEl.classList.remove('absolute', 'relative', 'transform', 'hover:scale-105');
+            window.ghostEl.style.setProperty('position', 'fixed', 'important'); 
+            window.ghostEl.style.setProperty('z-index', '999999', 'important'); 
+            window.ghostEl.style.setProperty('opacity', '0.85', 'important'); 
+            window.ghostEl.style.setProperty('pointer-events', 'none', 'important'); 
+            window.ghostEl.style.setProperty('width', rect.width + 'px', 'important'); 
+            window.ghostEl.style.setProperty('height', rect.height + 'px', 'important'); 
+            window.ghostEl.style.setProperty('margin', '0', 'important'); 
+            window.ghostEl.style.setProperty('left', '0px', 'important'); 
+            window.ghostEl.style.setProperty('top', '0px', 'important'); 
+            window.ghostEl.style.setProperty('transform-origin', 'top left', 'important');
+            
             document.body.appendChild(window.ghostEl);
+            
             window.moveGhost(touch.clientX, touch.clientY);
-            target.style.opacity = '0.4';
         };
 
         window.handleTouchMove = (ev) => {
-            if (!isDragging || !window.ghostEl) return;
+            if (!window.ghostEl) return;
+            // IMPORTANTE: Previene el scroll o refresco nativo en dispositivos táctiles
             if (ev.cancelable) ev.preventDefault(); 
             
-            const touch = ev.touches[0]; window.moveGhost(touch.clientX, touch.clientY);
+            const touch = ev.touches[0]; 
+            window.moveGhost(touch.clientX, touch.clientY);
+            
+            // Identificar zona de caída
             const dropTargetEl = document.elementFromPoint(touch.clientX, touch.clientY); 
-            const dropZone = dropTargetEl ? dropTargetEl.closest('.dropzone-area') : null;
+            const dropZone = dropTargetEl ? dropTargetEl.closest('.pitch-bg div[id]') : null;
             
             if (window.currentDropZone !== dropZone) { 
                 if (window.currentDropZone) window.currentDropZone.classList.remove('drop-target'); 
@@ -585,62 +857,106 @@
         };
 
         window.handleTouchEnd = (ev) => {
-            if (!isDragging) return;
-            isDragging = false;
-            if (window.draggedItem) window.draggedItem.style.opacity = '1';
-            if (window.ghostEl) { window.ghostEl.remove(); window.ghostEl = null; }
-            if (window.currentDropZone) { window.currentDropZone.classList.remove('drop-target'); window.currentDropZone = null; }
-
+            if (!window.draggedItem || !window.ghostEl) return;
+            
             const touch = ev.changedTouches[0]; 
+            window.ghostEl.remove(); 
+            window.ghostEl = null;
+            
+            if (window.currentDropZone) { 
+                window.currentDropZone.classList.remove('drop-target'); 
+                window.currentDropZone = null; 
+            }
+
             const dropTargetEl = document.elementFromPoint(touch.clientX, touch.clientY); 
-            const dropZone = dropTargetEl ? dropTargetEl.closest('.dropzone-area') : null;
+            const dropZone = dropTargetEl ? dropTargetEl.closest('.pitch-bg div[id]') : null;
             
             let spaceId = 'unassigned';
-            if (dropZone) spaceId = dropZone.id; 
-            else if (dropTargetEl && dropTargetEl.closest('#unassigned-teams-wrapper, #unassigned-teams, #unassigned-teams-container')) spaceId = 'unassigned'; 
-            else { window.draggedItem = null; window.gkMarkerTouch = false; return; }
+            if (dropZone) {
+                spaceId = dropZone.id; 
+            } else if (dropTargetEl && (dropTargetEl.closest('#unassigned-teams') || dropTargetEl.closest('#unassigned-teams-container'))) {
+                spaceId = 'unassigned'; 
+            } else { 
+                window.draggedItem = null; 
+                window.gkMarkerTouch = false; 
+                return; 
+            }
 
-            const mockEv = { preventDefault: () => {}, dataTransfer: { getData: (type) => { if (type === 'gkMarker') return window.gkMarkerTouch ? "true" : null; if (type === 'teamId' && !window.gkMarkerTouch) return window.draggedItem.id.replace('team-', ''); return null; } } };
+            // Simular DataTransfer para reutilizar lógica HandleDrop
+            const mockEv = { 
+                preventDefault: () => {}, 
+                dataTransfer: { 
+                    getData: (type) => { 
+                        if (type === 'gkMarker') return window.gkMarkerTouch ? "true" : null; 
+                        if (type === 'teamId' && !window.gkMarkerTouch) return window.draggedItem.id.replace('team-', ''); 
+                        return null; 
+                    } 
+                } 
+            };
+            
             window.handleDrop(mockEv, spaceId);
-            window.draggedItem = null; window.gkMarkerTouch = false;
+            window.draggedItem = null; 
+            window.gkMarkerTouch = false;
         };
 
-        window.moveGhost = (x, y) => { if (!window.ghostEl) return; const posX = x - window.touchOffsetX; const posY = y - window.touchOffsetY; window.ghostEl.style.transform = `translate3d(${posX}px, ${posY}px, 0)`; };
+        window.moveGhost = (x, y) => {
+            if (!window.ghostEl) return;
+            const posX = x - window.touchOffsetX; 
+            const posY = y - window.touchOffsetY; 
+            window.ghostEl.style.transform = `translate3d(${posX}px, ${posY}px, 0)`;
+        };
 
+        // ==========================================
+        // OTRAS FUNCIONES (AutoAssign, CustomFields, Export)
+        // ==========================================
         window.triggerAutoAssign = () => {
-            state.assignments = {}; state.gkAssignments = {}; const dateObj = new Date(state.date); const dayOfYear = Math.floor((dateObj - new Date(dateObj.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
-            let teamIndex = dayOfYear % TEAMS.length; 
-            const baseFields = FIELDS.filter(f => !(state.deletedFields || []).includes(f.id));
-            const allFields = [...baseFields, ...(state.customFields || [])]; 
+            state.assignments = {}; state.gkAssignments = {}; 
+            const dateObj = new Date(state.date); const dayOfYear = Math.floor((dateObj - new Date(dateObj.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
+            let teamIndex = dayOfYear % TEAMS.length;
+            const allFields = [...FIELDS, ...(state.customFields || [])];
             const ALL_SPACES = []; allFields.forEach(f => { ALL_SPACES.push(`${f.id}-izq`); ALL_SPACES.push(`${f.id}-der`); });
             TIME_SLOTS.forEach(slot => { ALL_SPACES.forEach(spaceId => { if (teamIndex < TEAMS.length) { const team = TEAMS[teamIndex]; state.assignments[`${spaceId}-${slot.id}`] = team.id; teamIndex++; } }); teamIndex = 0; });
             renderTeams(); saveAssignments();
         };
 
-        window.triggerClearAssignments = () => { state.assignments = {}; state.gkAssignments = {}; renderTeams(); saveAssignments(); window.showToast('Limpiado'); };
-        window.addCustomField = () => { const input = document.getElementById('new-field-name'); const name = input.value.trim(); if (!name) return; if (!state.customFields) state.customFields = []; state.customFields.push({ id: 'c-ext-' + Date.now(), name: name }); input.value = ''; renderApp(); saveAssignments(); };
-        
-        window.deleteField = (id) => { 
-            if (id.startsWith('c-ext-')) { state.customFields = (state.customFields || []).filter(f => f.id !== id); } 
-            else { if (!state.deletedFields) state.deletedFields = []; state.deletedFields.push(id); }
-            for (let key in state.assignments) { if (key.startsWith(id)) delete state.assignments[key]; } 
-            for (let key in state.gkAssignments) { if (key.startsWith(id)) delete state.gkAssignments[key]; } 
-            renderApp(); saveAssignments(); 
+        window.triggerClearAssignments = () => { state.assignments = {}; state.gkAssignments = {}; renderTeams(); saveAssignments(); window.showToast('Asignaciones eliminadas'); };
+
+        window.addCustomField = () => {
+            const input = document.getElementById('new-field-name'); const name = input.value.trim(); if (!name) return;
+            if (!state.customFields) state.customFields = []; state.customFields.push({ id: 'c-ext-' + Date.now(), name: name });
+            input.value = ''; renderApp(); saveAssignments();
         };
 
-        window.showToast = (msg, type = 'success') => { const toast = document.getElementById('toast'); const msgEl = document.getElementById('toast-message'); const icon = document.getElementById('toast-icon'); msgEl.innerText = msg; icon.className = type === 'error' ? 'fa-solid fa-circle-exclamation text-red-400' : 'fa-solid fa-circle-check text-green-400'; toast.classList.remove('translate-y-24', 'opacity-0'); setTimeout(() => toast.classList.add('translate-y-24', 'opacity-0'), 3000); };
+        window.deleteCustomField = (id) => {
+            if (!state.customFields) return; state.customFields = state.customFields.filter(f => f.id !== id);
+            for (let key in state.assignments) { if (key.startsWith(id)) delete state.assignments[key]; }
+            for (let key in state.gkAssignments) { if (key.startsWith(id)) delete state.gkAssignments[key]; }
+            renderApp(); saveAssignments();
+        };
 
-        function updateDisplayDateUI() { const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }; document.getElementById('display-date').innerText = "Planificación: " + new Date(state.date).toLocaleDateString('es-ES', options); renderDateCarousel(); }
-        
+        window.showToast = (msg, type = 'success') => {
+            const toast = document.getElementById('toast'); const msgEl = document.getElementById('toast-message'); const icon = document.getElementById('toast-icon');
+            msgEl.innerText = msg; icon.className = type === 'error' ? 'fa-solid fa-circle-exclamation text-red-400' : 'fa-solid fa-circle-check text-green-400';
+            toast.classList.remove('translate-y-24', 'opacity-0'); setTimeout(() => toast.classList.add('translate-y-24', 'opacity-0'), 3000);
+        };
+
+        function updateDisplayDateUI() {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }; const dateObj = new Date(state.date);
+            document.getElementById('display-date').innerText = "Planificación: " + dateObj.toLocaleDateString('es-ES', options);
+            renderDateCarousel();
+        }
+
         function renderDateCarousel() {
             const carousel = document.getElementById('date-carousel'); carousel.innerHTML = '';
             const activeDate = new Date(state.date); const startDate = new Date(activeDate); startDate.setDate(activeDate.getDate() - 7);
-            const esFormatter = new Intl.DateTimeFormat('es-ES', { weekday: 'short', day: 'numeric', month: 'short' }); const todayStr = new Date().toISOString().split('T')[0];
+            const esFormatter = new Intl.DateTimeFormat('es-ES', { weekday: 'short', day: 'numeric', month: 'short' });
+            const todayStr = new Date().toISOString().split('T')[0];
 
             for (let i = 0; i < 15; i++) {
                 const iterDate = new Date(startDate); iterDate.setDate(startDate.getDate() + i); const dateStr = iterDate.toISOString().split('T')[0];
                 const isSelected = dateStr === state.date; const isToday = dateStr === todayStr; const hasData = state.savedDays.has(dateStr);
-                let dateText = esFormatter.format(iterDate).replace('.', ''); dateText = dateText.charAt(0).toUpperCase() + dateText.slice(1); if (isToday) dateText = "Hoy";
+                let dateText = esFormatter.format(iterDate).replace('.', ''); dateText = dateText.charAt(0).toUpperCase() + dateText.slice(1);
+                if (isToday) dateText = "Hoy";
 
                 const btn = document.createElement('button');
                 btn.className = `flex-shrink-0 px-3 md:px-4 py-1 md:py-1.5 mx-1 rounded-full text-[10px] md:text-sm font-medium transition-all flex items-center space-x-1.5 md:space-x-2 border ${isSelected ? 'bg-atleti-red text-white border-atleti-red shadow-md scale-105' : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700 hover:text-white'}`;
@@ -654,16 +970,14 @@
         const dateInput = document.getElementById('current-date'); dateInput.value = state.date; updateDisplayDateUI();
         dateInput.addEventListener('change', (e) => { if(!e.target.value) return; state.date = e.target.value; updateDisplayDateUI(); listenToDate(state.date); });
 
-        // EXPORTAR: SISTEMA NATIVO DE DESCARGA FORZADA (Evita bloqueos en móviles)
+        // EXPORTAR DISEÑO A WHATSAPP
         window.shareWhatsApp = async () => {
-            window.showToast('Generando diseño...', 'success');
-            const exportContainer = document.createElement('div');
-            Object.assign(exportContainer.style, { position: 'absolute', left: '-10000px', top: '0', width: '1200px', backgroundColor: '#0f172a', fontFamily: "'Inter', sans-serif", padding: '40px', color: 'white', boxSizing: 'border-box' });
+            window.showToast('Generando diseño profesional...', 'success');
             
-            const fullDateStr = new Date(state.date).toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }); 
-            const activeSlotText = TIME_SLOTS.find(s => s.id === state.activeSlot)?.time || ''; 
-            const baseFields = FIELDS.filter(f => !(state.deletedFields || []).includes(f.id));
-            const allFields = [...baseFields, ...(state.customFields || [])];
+            const exportContainer = document.createElement('div');
+            exportContainer.style.position = 'absolute'; exportContainer.style.left = '-10000px'; exportContainer.style.top = '0'; exportContainer.style.width = '1200px'; exportContainer.style.backgroundColor = '#0f172a'; exportContainer.style.fontFamily = "'Inter', sans-serif"; exportContainer.style.padding = '40px'; exportContainer.style.color = 'white';
+            
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }; const fullDateStr = new Date(state.date).toLocaleDateString('es-ES', options); const activeSlotText = TIME_SLOTS.find(s => s.id === state.activeSlot)?.time || ''; const allFields = [...FIELDS, ...(state.customFields || [])];
 
             let htmlContent = `
                 <div style="display: flex; align-items: center; border-bottom: 4px solid #CB3524; padding-bottom: 25px; margin-bottom: 40px;">
@@ -677,38 +991,36 @@
             `;
 
             const renderExportTeam = (spaceId) => {
-                const assignedTeamId = state.assignments[`${spaceId}-${state.activeSlot}`]; 
-                const hasGK = state.gkAssignments[`${spaceId}-${state.activeSlot}`]; 
-                let content = '<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; gap: 15px;">';
-                
+                const assignedTeamId = state.assignments[`${spaceId}-${state.activeSlot}`];
+                const hasGK = state.gkAssignments[`${spaceId}-${state.activeSlot}`];
+                let content = '';
+
                 if (hasGK) {
-                    let tasksStr = Array.isArray(hasGK) && hasGK.length > 0 ? hasGK.join(' - ') : 'T1 - T2 - T3';
-                    content += `
-                        <div style="background: #CB3524; color: white; padding: 6px 20px; border-radius: 12px; font-size: 14px; font-weight: bold; z-index: 10; border: 2px solid white; display: flex; flex-direction: column; align-items: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
-                            <span style="margin-bottom: 3px;">🛡️ ZONA GK</span>
-                            <span style="font-size: 11px; color: #fecaca; letter-spacing: 1px;">${tasksStr}</span>
-                        </div>
-                    `;
+                    let tasksStr = 'T1 - T2 - T3';
+                    if (Array.isArray(hasGK)) tasksStr = hasGK.length > 0 ? hasGK.join(' - ') : 'Libre';
+                    
+                    content += `<div style="position: absolute; top: -30px; left: 50%; transform: translateX(-50%); background: #CB3524; color: white; padding: 6px 20px; border-radius: 12px; font-size: 14px; font-weight: bold; z-index: 10; border: 2px solid white; display: flex; flex-direction: column; align-items: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
+                        <span style="margin-bottom: 3px;">🛡️ ZONA GK</span>
+                        <span style="font-size: 11px; color: #fecaca; letter-spacing: 1px;">${tasksStr}</span>
+                    </div>`;
                 }
-                
+
                 if (assignedTeamId) {
                     const team = TEAMS.find(t => t.id === assignedTeamId);
                     if (team) {
-                        const dotColor = team.categoryColor.includes('orange') ? '#f97316' : team.categoryColor.includes('green') ? '#22c55e' : '#60a5fa';
                         content += `
-                            <div style="background: rgba(39, 50, 70, 0.95); width: 220px; padding: 20px; border-radius: 16px; border: 2px solid rgba(255,255,255,0.3); display: flex; flex-direction: column; align-items: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
-                                <div style="width: 75px; height: 75px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; padding: 5px; position: relative;">
+                            <div style="background: rgba(39, 50, 70, 0.95); width: 220px; padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.3); display: flex; flex-direction: column; align-items: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+                                <div style="width: 70px; height: 70px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; padding: 5px; position: relative;">
                                     <img src="ESCUDO%20ATM.png" style="width: 100%; height: 100%; object-fit: contain;">
-                                    <div style="position: absolute; top: 0; right: 0; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; background-color: ${dotColor};"></div>
+                                    <div style="position: absolute; top: 0; right: 0; width: 14px; height: 14px; border-radius: 50%; border: 2px solid white; background-color: ${team.categoryColor.includes('orange') ? '#f97316' : team.categoryColor.includes('green') ? '#22c55e' : '#60a5fa'};"></div>
                                 </div>
                                 <div style="font-size: 20px; font-weight: bold; text-align: center; color: white;">${team.name}</div>
                             </div>
                         `;
                     }
-                } else { 
-                    content += `<div style="color: rgba(255,255,255,0.8); font-size: 16px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; background: rgba(0,0,0,0.5); padding: 8px 24px; border-radius: 30px; border: 1px dashed rgba(255,255,255,0.5);">Libre</div>`;
+                } else {
+                     content += `<div style="color: rgba(255,255,255,0.4); font-size: 16px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; background: rgba(0,0,0,0.4); padding: 8px 24px; border-radius: 30px;">Libre</div>`;
                 }
-                content += '</div>';
                 return content;
             };
 
@@ -716,19 +1028,14 @@
                 htmlContent += `
                     <div style="background: #1e293b; border-radius: 24px; padding: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.3);">
                         <h3 style="font-size: 28px; font-weight: bold; color: white; text-align: center; margin: 0 0 25px 0;">📍 ${field.name}</h3>
-                        <div style="height: 380px; position: relative; border-radius: 12px; border: 6px solid rgba(255,255,255,0.9); background-color: #4c962b; display: flex; overflow: hidden;">
-                            <div style="position: absolute; top: 0; bottom: 0; left: 0; width: 10%; background-color: #448924; z-index: 0;"></div>
-                            <div style="position: absolute; top: 0; bottom: 0; left: 20%; width: 10%; background-color: #448924; z-index: 0;"></div>
-                            <div style="position: absolute; top: 0; bottom: 0; left: 40%; width: 10%; background-color: #448924; z-index: 0;"></div>
-                            <div style="position: absolute; top: 0; bottom: 0; left: 60%; width: 10%; background-color: #448924; z-index: 0;"></div>
-                            <div style="position: absolute; top: 0; bottom: 0; left: 80%; width: 10%; background-color: #448924; z-index: 0;"></div>
-                            <div style="position: absolute; left: 50%; top: 0; bottom: 0; width: 6px; background: rgba(255,255,255,0.9); transform: translateX(-50%); z-index: 1;"></div>
-                            <div style="position: absolute; left: 50%; top: 50%; width: 160px; height: 160px; border: 6px solid rgba(255,255,255,0.9); border-radius: 50%; transform: translate(-50%, -50%); z-index: 1;"></div>
-                            <div style="position: absolute; left: 50%; top: 50%; width: 16px; height: 16px; background: white; border-radius: 50%; transform: translate(-50%, -50%); z-index: 1;"></div>
-                            <div style="position: absolute; left: 0; top: 50%; width: 180px; height: 220px; border: 6px solid rgba(255,255,255,0.9); border-left: none; transform: translateY(-50%); z-index: 1;"></div>
-                            <div style="position: absolute; right: 0; top: 50%; width: 180px; height: 220px; border: 6px solid rgba(255,255,255,0.9); border-right: none; transform: translateY(-50%); z-index: 1;"></div>
-                            <div style="width: 50%; height: 100%; position: relative; z-index: 5;">${renderExportTeam(field.id + '-izq')}</div>
-                            <div style="width: 50%; height: 100%; position: relative; z-index: 5;">${renderExportTeam(field.id + '-der')}</div>
+                        <div style="height: 380px; position: relative; border-radius: 12px; border: 6px solid rgba(255,255,255,0.8); background: repeating-linear-gradient(90deg, #4c962b, #4c962b 5.5%, #448924 5.5%, #448924 11%); overflow: hidden; display: flex;">
+                            <div style="position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: rgba(255,255,255,0.8); transform: translateX(-50%);"></div>
+                            <div style="position: absolute; left: 50%; top: 50%; width: 160px; height: 160px; border: 4px solid rgba(255,255,255,0.8); border-radius: 50%; transform: translate(-50%, -50%);"></div>
+                            <div style="position: absolute; left: 50%; top: 50%; width: 12px; height: 12px; background: white; border-radius: 50%; transform: translate(-50%, -50%);"></div>
+                            <div style="position: absolute; left: 0; top: 50%; width: 180px; height: 220px; border: 4px solid rgba(255,255,255,0.8); border-left: none; transform: translateY(-50%);"></div>
+                            <div style="position: absolute; right: 0; top: 50%; width: 180px; height: 220px; border: 4px solid rgba(255,255,255,0.8); border-right: none; transform: translateY(-50%);"></div>
+                            <div style="width: 50%; height: 100%; display: flex; align-items: center; justify-content: center; position: relative; padding-right: 40px;">${renderExportTeam(field.id + '-izq')}</div>
+                            <div style="width: 50%; height: 100%; display: flex; align-items: center; justify-content: center; position: relative; padding-left: 40px;">${renderExportTeam(field.id + '-der')}</div>
                         </div>
                     </div>
                 `;
@@ -736,61 +1043,34 @@
 
             htmlContent += `</div><div style="text-align: center; margin-top: 40px; color: #475569; font-size: 16px; font-weight: bold;">Generado automáticamente por ATM GK Planer</div>`;
             exportContainer.innerHTML = htmlContent; document.body.appendChild(exportContainer);
+
             await new Promise(r => setTimeout(r, 600));
 
             try {
                 const canvas = await html2canvas(exportContainer, { scale: 2, backgroundColor: '#0f172a', useCORS: true });
                 document.body.removeChild(exportContainer);
-                
-                const filename = `ATM_GK_Planer_${state.date}_${state.activeSlot}.png`;
-                const url = canvas.toDataURL('image/png'); // Usamos DataURL, es mucho más seguro en móviles
-                
-                // Intento 1: API Compartir Nativa (Nuevos móviles)
-                try {
-                    const res = await fetch(url);
-                    const blob = await res.blob();
+
+                canvas.toBlob(async (blob) => {
+                    const filename = `ATM_GK_Planer_${state.date}_${state.activeSlot}.png`;
                     const file = new File([blob], filename, { type: 'image/png' });
                     
                     if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                        await navigator.share({
-                            files: [file],
-                            title: 'Planificación ATM GK'
-                        });
-                        window.showToast('Diseño compartido', 'success');
-                        return;
+                        try { await navigator.share({ files: [file], title: 'Planificación ATM GK', text: `Planificación del ${fullDateStr} (${activeSlotText})` }); window.showToast('Diseño compartido', 'success'); } catch(e) { console.log("Compartir cancelado o no soportado"); }
+                    } else {
+                        const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.download = filename; link.href = url; link.click(); URL.revokeObjectURL(url); window.showToast('Diseño descargado. ¡Envíalo por WhatsApp!', 'success');
                     }
-                } catch (e) {
-                    console.log("Compartir falló, forzando descarga tradicional...");
-                }
+                }, 'image/png');
 
-                // Intento 2: Descarga Nativa Forzada (Ordenadores y móviles que rechazan compartir)
-                const link = document.createElement('a');
-                link.download = filename;
-                link.href = url;
-                document.body.appendChild(link); // Vital inyectarlo en el DOM para engañar a Safari/Firefox
-                link.click();
-                setTimeout(() => {
-                    document.body.removeChild(link);
-                }, 100);
-                window.showToast('Diseño descargado', 'success');
-
-            } catch (err) { 
-                window.showToast('Error al generar la imagen', 'error'); 
-                if (document.body.contains(exportContainer)) document.body.removeChild(exportContainer); 
-            }
+            } catch (err) { console.error("Error capturando imagen", err); window.showToast('Error al generar la imagen', 'error'); if (document.body.contains(exportContainer)) document.body.removeChild(exportContainer); }
         };
 
+        // PWA E INSTALACIÓN 
         window.forceInstallModal = () => { document.getElementById('install-modal').classList.remove('hidden'); document.getElementById('install-modal').classList.add('flex'); };
-        window.installPWA = async () => { alert("iOS (iPhone/iPad):\nToca 'Compartir' y selecciona 'Añadir a la pantalla de inicio'.\n\nAndroid:\nToca el menú y selecciona 'Añadir a la pantalla de inicio'."); window.closeInstallModal(); };
+        window.installPWA = async () => { alert("Para instalar la aplicación:\n\n📱 iOS (iPhone/iPad):\nToca el botón 'Compartir' (cuadrado con flecha hacia arriba) y selecciona 'Añadir a la pantalla de inicio'.\n\n🤖 Android (Chrome):\nToca el menú (3 puntos arriba a la derecha) y selecciona 'Añadir a la pantalla de inicio'."); window.closeInstallModal(); };
         window.closeInstallModal = () => { document.getElementById('install-modal').classList.add('hidden'); document.getElementById('install-modal').classList.remove('flex'); };
-        
-        document.addEventListener("DOMContentLoaded", () => { 
-            if (window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches) { const btn = document.getElementById('install-app-btn'); if(btn) btn.style.display = 'none'; } 
-            window.initTouchDragAndDrop();
-        });
+        document.addEventListener("DOMContentLoaded", () => { if (window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches) { const btn = document.getElementById('install-app-btn'); if(btn) btn.style.display = 'none'; } });
 
         initFirebase();
     </script>
 </body>
 </html>
-```
