@@ -160,9 +160,10 @@
     </header>
 
     <!-- CONTENEDOR PRINCIPAL FLUIDO -->
+    <!-- Calculamos la altura para que ocupe el resto de la pantalla y permita scroll interno -->
     <main id="main-content-wrapper" class="w-full flex flex-col md:flex-row bg-slate-800">
         
-        <!-- Panel Izquierdo: Controles -->
+        <!-- Panel Izquierdo: Controles (Se colapsa en Modo Vista) -->
         <aside id="main-sidebar" class="w-full md:w-80 bg-white shadow-md flex flex-col z-10 shrink-0 border-b border-slate-200 md:border-b-0 h-[35vh] md:h-full transition-all duration-300">
             
             <!-- Contenedor Equipos y Zona GK -->
@@ -172,17 +173,18 @@
                     <span id="unassigned-count" class="bg-slate-200 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
                 </div>
                 
-                <!-- ÁREA MODIFICADA: Ahora es una cuadrícula (grid) en móvil sin scroll horizontal -->
-                <div class="flex-1 overflow-y-auto no-scrollbar pb-2 pt-1 flex flex-col space-y-2 md:space-y-3 w-full" id="unassigned-teams-container">
+                <!-- Área desplazable de equipos -->
+                <div class="flex-1 flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto no-scrollbar space-x-2 md:space-x-0 md:space-y-3 pb-2 pt-1 items-center md:items-stretch" id="unassigned-teams-container">
                     
                     <!-- Marcador GK -->
-                    <div id="gk-marker" draggable="true" ondragstart="window.handleGKDragStart(event)" class="touch-draggable shrink-0 p-2 md:p-3 w-full rounded-lg border-2 border-atleti-red bg-red-50 text-atleti-red shadow-sm flex items-center justify-center cursor-grab transition-all border-dashed">
+                    <!-- CLAVE: touch-draggable asignada -->
+                    <div id="gk-marker" draggable="true" ondragstart="window.handleGKDragStart(event)" class="touch-draggable shrink-0 p-1.5 md:p-3 w-28 md:w-full rounded-lg border-2 border-atleti-red bg-red-50 text-atleti-red shadow-sm flex items-center justify-center cursor-grab transition-all border-dashed">
                         <i class="fa-solid fa-mitten text-sm md:text-lg mr-1.5"></i>
-                        <span class="font-bold text-[11px] md:text-sm leading-tight text-center pointer-events-none">Zona GK</span>
+                        <span class="font-bold text-[10px] md:text-sm leading-tight text-center pointer-events-none">Zona GK</span>
                     </div>
                     
-                    <!-- Equipos No Asignados (GRID DE 2 COLUMNAS EN MÓVIL) -->
-                    <div id="unassigned-teams" class="grid grid-cols-2 md:grid-cols-1 gap-2 md:gap-3 w-full shrink-0" ondrop="window.handleDrop(event, 'unassigned')" ondragover="window.allowDrop(event)"></div>
+                    <!-- Equipos No Asignados -->
+                    <div id="unassigned-teams" class="flex flex-row md:flex-col space-x-2 md:space-x-0 md:space-y-3 shrink-0 h-full" ondrop="window.handleDrop(event, 'unassigned')" ondragover="window.allowDrop(event)"></div>
                 </div>
             </div>
 
@@ -257,7 +259,7 @@
         import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // CONFIGURACIÓN Y DATOS BASE
+        // CONFIGURACIÓN Y DATOS BASE CON COLORES DE CATEGORÍA
         const TEAMS = [
             { id: 't1', name: 'Prebenjamín A', categoryColor: 'bg-orange-500' },
             { id: 't2', name: 'Benjamín B', categoryColor: 'bg-blue-400' },
@@ -281,7 +283,7 @@
             assignments: {},   
             gkAssignments: {},
             customFields: [],
-            deletedFields: [], // AÑADIDO: Registro de campos borrados
+            deletedFields: [], // AÑADIDO PARA BORRAR CAMPOS
             savedDays: new Set(),
             viewMode: false // Modo Coordinador
         };
@@ -444,6 +446,7 @@
             const sidebar = document.getElementById('main-sidebar');
             const toggleBtn = document.getElementById('view-mode-btn');
             
+            // Buscar contenedor de campos para ajustar altura dinámicamente
             const section = document.querySelector('section');
 
             if (state.viewMode) {
@@ -474,6 +477,7 @@
             
             let dataFound = false;
 
+            // 1. Buscar en Firebase
             if (db && !isOfflineMode) {
                 try {
                     const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'assignments', prevDateStr);
@@ -489,6 +493,7 @@
                 } catch(e) {}
             }
 
+            // 2. Buscar en LocalStorage si falla Firebase
             if (!dataFound) {
                 try {
                     const localData = localStorage.getItem(`atm_gk_${prevDateStr}`);
@@ -595,15 +600,17 @@
                 const card = document.createElement('div');
                 card.id = `team-${team.id}`;
                 
+                // Si no estamos en modo vista, se puede arrastrar
                 if (!state.viewMode) {
                     card.draggable = true;
                     card.ondragstart = window.handleDragStart;
-                    card.classList.add('touch-draggable');
+                    card.classList.add('touch-draggable'); // CLAVE: Añadir clase para touch en equipos
                 }
                 
                 const activeSuffix = `-${state.activeSlot}`;
                 const assignedKey = Object.keys(state.assignments).find(key => state.assignments[key] === team.id && key.endsWith(activeSuffix));
 
+                // Indicador de color de categoría
                 const categoryDot = `<div class="absolute -top-1 -right-1 w-3 h-3 md:w-4 md:h-4 rounded-full ${team.categoryColor} border-2 border-white shadow-sm z-30"></div>`;
 
                 if (assignedKey) {
@@ -612,6 +619,7 @@
                     
                     if (targetZone) {
                         const span = targetZone.querySelector('span'); if(span) span.style.display = 'none';
+                        // CLAVE: Asegurar touch-draggable en campos
                         card.className = `touch-draggable ${state.viewMode ? '' : 'cursor-grab transform hover:scale-105'} team-card-on-pitch w-[95%] md:w-[90%] max-w-[200px] p-1.5 md:p-4 rounded-xl border border-white/30 bg-atleti-blue/95 text-white shadow-[0_8px_15px_rgba(0,0,0,0.4)] backdrop-blur-sm flex flex-col md:flex-row items-center justify-center md:space-x-3 z-20 absolute`;
                         card.innerHTML = `
                             <div class="relative pointer-events-none">
@@ -664,6 +672,7 @@
         }
 
         function createBadge(key) {
+            // Ciclo de tareas: T1-T2-T3 -> T1-T2 -> T1 -> T3
             let currentOptionIndex = 0;
             const taskOptions = [
                 ['T1', 'T2', 'T3'],      
@@ -787,11 +796,13 @@
             if (state.viewMode) return; 
             
             document.querySelectorAll('.touch-draggable').forEach(el => {
+                // Eliminar antiguos para evitar duplicados
                 el.removeEventListener('touchstart', window.handleTouchStart); 
                 el.removeEventListener('touchmove', window.handleTouchMove); 
                 el.removeEventListener('touchend', window.handleTouchEnd); 
                 el.removeEventListener('touchcancel', window.handleTouchEnd);
                 
+                // Asignar nuevos con passive: false para permitir preventDefault y bloquear el scroll de pantalla al arrastrar
                 el.addEventListener('touchstart', window.handleTouchStart, { passive: false }); 
                 el.addEventListener('touchmove', window.handleTouchMove, { passive: false }); 
                 el.addEventListener('touchend', window.handleTouchEnd, { passive: false }); 
@@ -810,11 +821,14 @@
             const touch = ev.touches[0]; 
             const rect = target.getBoundingClientRect();
             
+            // Calculamos el offset para que la tarjeta no salte
             window.touchOffsetX = touch.clientX - rect.left; 
             window.touchOffsetY = touch.clientY - rect.top;
             
+            // Creamos el clon fantasma
             window.ghostEl = target.cloneNode(true);
             
+            // Limpieza de clases y aplicación forzada de estilos
             window.ghostEl.classList.remove('absolute', 'relative', 'transform', 'hover:scale-105');
             window.ghostEl.style.setProperty('position', 'fixed', 'important'); 
             window.ghostEl.style.setProperty('z-index', '999999', 'important'); 
@@ -834,11 +848,13 @@
 
         window.handleTouchMove = (ev) => {
             if (!window.ghostEl) return;
+            // IMPORTANTE: Previene el scroll o refresco nativo en dispositivos táctiles
             if (ev.cancelable) ev.preventDefault(); 
             
             const touch = ev.touches[0]; 
             window.moveGhost(touch.clientX, touch.clientY);
             
+            // Identificar zona de caída
             const dropTargetEl = document.elementFromPoint(touch.clientX, touch.clientY); 
             const dropZone = dropTargetEl ? dropTargetEl.closest('.pitch-bg div[id]') : null;
             
@@ -875,6 +891,7 @@
                 return; 
             }
 
+            // Simular DataTransfer para reutilizar lógica HandleDrop
             const mockEv = { 
                 preventDefault: () => {}, 
                 dataTransfer: { 
@@ -969,58 +986,78 @@
         const dateInput = document.getElementById('current-date'); dateInput.value = state.date; updateDisplayDateUI();
         dateInput.addEventListener('change', (e) => { if(!e.target.value) return; state.date = e.target.value; updateDisplayDateUI(); listenToDate(state.date); });
 
-        // EXPORTAR DISEÑO A WHATSAPP MODIFICADO: Bloques verdes en el CSS
+        // EXPORTAR DISEÑO A WHATSAPP: OPTIMIZADO PARA VELOCIDAD Y DISEÑO "MODO VISTA"
         window.shareWhatsApp = async () => {
-            window.showToast('Generando diseño profesional...', 'success');
+            window.showToast('Generando diseño, por favor espera...', 'success');
             
             const exportContainer = document.createElement('div');
-            exportContainer.style.position = 'absolute'; exportContainer.style.left = '-10000px'; exportContainer.style.top = '0'; exportContainer.style.width = '1200px'; exportContainer.style.backgroundColor = '#0f172a'; exportContainer.style.fontFamily = "'Inter', sans-serif"; exportContainer.style.padding = '40px'; exportContainer.style.color = 'white';
+            // Ancho reducido de 1200px a 900px para que los móviles lo procesen más rápido
+            exportContainer.style.position = 'absolute'; exportContainer.style.left = '-10000px'; exportContainer.style.top = '0'; exportContainer.style.width = '900px'; exportContainer.style.backgroundColor = '#1e293b'; exportContainer.style.fontFamily = "'Inter', sans-serif"; exportContainer.style.padding = '30px'; exportContainer.style.color = 'white';
             
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }; const fullDateStr = new Date(state.date).toLocaleDateString('es-ES', options); const activeSlotText = TIME_SLOTS.find(s => s.id === state.activeSlot)?.time || ''; 
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }; 
+            const fullDateStr = new Date(state.date).toLocaleDateString('es-ES', options); 
+            const activeSlotText = TIME_SLOTS.find(s => s.id === state.activeSlot)?.time || ''; 
             const baseFields = FIELDS.filter(f => !(state.deletedFields || []).includes(f.id));
             const allFields = [...baseFields, ...(state.customFields || [])];
 
             let htmlContent = `
-                <div style="display: flex; align-items: center; border-bottom: 4px solid #CB3524; padding-bottom: 25px; margin-bottom: 40px;">
-                    <img src="ESCUDO%20ATM.png" style="width: 100px; height: 100px; object-fit: contain; margin-right: 25px;">
-                    <div>
-                        <h1 style="font-size: 42px; font-weight: bold; margin: 0; color: white; letter-spacing: 1px;">ATM GK PLANER</h1>
-                        <h2 style="font-size: 24px; color: #94a3b8; margin: 5px 0 0 0; text-transform: capitalize;">${fullDateStr} &nbsp;|&nbsp; <span style="color: #CB3524; font-weight: bold;">${activeSlotText}</span></h2>
+                <div style="display: flex; align-items: center; border-bottom: 2px solid #334155; padding-bottom: 20px; margin-bottom: 30px;">
+                    <img src="ESCUDO%20ATM.png" style="width: 70px; height: 70px; object-fit: contain; margin-right: 20px;">
+                    <div style="flex-1;">
+                        <h1 style="font-size: 32px; font-weight: bold; margin: 0; color: white; letter-spacing: 1px;">ATM GK PLANER</h1>
+                        <h2 style="font-size: 18px; color: #94a3b8; margin: 5px 0 0 0; text-transform: capitalize;">${fullDateStr} &nbsp;|&nbsp; <span style="color: #ef4444; font-weight: bold;">${activeSlotText}</span></h2>
                     </div>
                 </div>
-                <div style="display: flex; flex-direction: column; gap: 40px;">
+                <div style="display: flex; flex-direction: column; gap: 30px;">
             `;
 
-            const renderExportTeam = (spaceId) => {
+            const renderExportTeam = (spaceId, isLeft) => {
                 const assignedTeamId = state.assignments[`${spaceId}-${state.activeSlot}`];
                 const hasGK = state.gkAssignments[`${spaceId}-${state.activeSlot}`];
-                let content = '<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; gap: 15px;">';
+                
+                // Contenedor general que ocupa el 50% del campo
+                let content = '<div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">';
 
+                // ZONA GK (El recuadro rojo tipo Modo Vista)
                 if (hasGK) {
-                    let tasksStr = 'T1 - T2 - T3';
-                    if (Array.isArray(hasGK)) tasksStr = hasGK.length > 0 ? hasGK.join(' - ') : 'Libre';
+                    let tasksStr = Array.isArray(hasGK) && hasGK.length > 0 ? hasGK.join(' - ') : 'T1 - T2 - T3';
                     
-                    content += `<div style="background: #CB3524; color: white; padding: 6px 20px; border-radius: 12px; font-size: 14px; font-weight: bold; z-index: 10; border: 2px solid white; display: flex; flex-direction: column; align-items: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
-                        <span style="margin-bottom: 3px;">🛡️ ZONA GK</span>
-                        <span style="font-size: 11px; color: #fecaca; letter-spacing: 1px;">${tasksStr}</span>
-                    </div>`;
+                    // Posicionamiento de la etiqueta superior (Chapa roja)
+                    const labelLeft = isLeft ? '15px' : 'auto';
+                    const labelRight = isLeft ? 'auto' : '15px';
+                    
+                    // El borde rojo del área
+                    content += `
+                        <div style="position: absolute; ${isLeft ? 'left: 0' : 'right: 0'}; top: 50%; transform: translateY(-50%); width: 45%; height: 75%; border: 3px solid #ef4444; background: rgba(239, 68, 68, 0.2); border-radius: ${isLeft ? '0 12px 12px 0' : '12px 0 0 12px'}; border-${isLeft ? 'left' : 'right'}: none;"></div>
+                    `;
+                    
+                    // La "chapa" de las tareas
+                    content += `
+                        <div style="position: absolute; top: 5px; left: ${labelLeft}; right: ${labelRight}; background: #ef4444; color: white; padding: 6px 16px; border-radius: 8px; font-size: 12px; font-weight: bold; text-align: center; border: 2px solid white; z-index: 20;">
+                            <div style="margin-bottom: 2px;">🛡️ ZONA GK</div>
+                            <div style="font-size: 14px;">${tasksStr}</div>
+                        </div>
+                    `;
                 }
 
+                // TARJETA DEL EQUIPO (Modo Vista - Horizontal)
                 if (assignedTeamId) {
                     const team = TEAMS.find(t => t.id === assignedTeamId);
                     if (team) {
+                        const dotColor = team.categoryColor.includes('orange') ? '#f97316' : team.categoryColor.includes('green') ? '#22c55e' : '#3b82f6';
+                        
                         content += `
-                            <div style="background: rgba(39, 50, 70, 0.95); width: 220px; padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.3); display: flex; flex-direction: column; align-items: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
-                                <div style="width: 70px; height: 70px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; padding: 5px; position: relative;">
+                            <div style="background: rgba(30, 41, 59, 0.95); padding: 12px 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 30;">
+                                <div style="width: 45px; height: 45px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; padding: 5px; margin-right: 15px; position: relative;">
                                     <img src="ESCUDO%20ATM.png" style="width: 100%; height: 100%; object-fit: contain;">
-                                    <div style="position: absolute; top: 0; right: 0; width: 14px; height: 14px; border-radius: 50%; border: 2px solid white; background-color: ${team.categoryColor.includes('orange') ? '#f97316' : team.categoryColor.includes('green') ? '#22c55e' : '#60a5fa'};"></div>
+                                    <div style="position: absolute; top: -2px; right: -2px; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; background-color: ${dotColor};"></div>
                                 </div>
-                                <div style="font-size: 20px; font-weight: bold; text-align: center; color: white;">${team.name}</div>
+                                <div style="font-size: 18px; font-weight: bold; color: white;">${team.name}</div>
                             </div>
                         `;
                     }
                 } else {
-                     content += `<div style="color: rgba(255,255,255,0.4); font-size: 16px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; background: rgba(0,0,0,0.4); padding: 8px 24px; border-radius: 30px;">Libre</div>`;
+                     content += `<div style="color: rgba(255,255,255,0.4); font-size: 14px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; background: rgba(0,0,0,0.3); padding: 6px 20px; border-radius: 20px; z-index: 30;">Libre</div>`;
                 }
                 content += '</div>';
                 return content;
@@ -1028,37 +1065,43 @@
 
             allFields.forEach(field => {
                 htmlContent += `
-                    <div style="background: #1e293b; border-radius: 24px; padding: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.3);">
-                        <h3 style="font-size: 28px; font-weight: bold; color: white; text-align: center; margin: 0 0 25px 0;">📍 ${field.name}</h3>
-                        <div style="height: 380px; position: relative; border-radius: 12px; border: 6px solid rgba(255,255,255,0.8); background-color: #4c962b; overflow: hidden; display: flex;">
+                    <div>
+                        <div style="display: flex; justify-content: center; margin-bottom: 15px;">
+                            <h3 style="font-size: 20px; font-weight: bold; color: white; background: #334155; padding: 5px 25px; border-radius: 20px; border: 1px solid #475569;">📍 ${field.name}</h3>
+                        </div>
+                        
+                        <div style="height: 280px; position: relative; border-radius: 10px; border: 4px solid #f8fafc; background: #4c962b; display: flex; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.4);">
                             
-                            <!-- Franjas de Césped construidas con divs (a prueba de fallos de exportación) -->
+                            <!-- Franjas de Césped simplificadas (Mejora la velocidad de exportación) -->
                             <div style="position: absolute; top: 0; bottom: 0; left: 0; width: 10%; background-color: #448924; z-index: 0;"></div>
                             <div style="position: absolute; top: 0; bottom: 0; left: 20%; width: 10%; background-color: #448924; z-index: 0;"></div>
                             <div style="position: absolute; top: 0; bottom: 0; left: 40%; width: 10%; background-color: #448924; z-index: 0;"></div>
                             <div style="position: absolute; top: 0; bottom: 0; left: 60%; width: 10%; background-color: #448924; z-index: 0;"></div>
                             <div style="position: absolute; top: 0; bottom: 0; left: 80%; width: 10%; background-color: #448924; z-index: 0;"></div>
 
-                            <div style="position: absolute; left: 50%; top: 0; bottom: 0; width: 6px; background: rgba(255,255,255,0.8); transform: translateX(-50%); z-index: 1;"></div>
-                            <div style="position: absolute; left: 50%; top: 50%; width: 160px; height: 160px; border: 6px solid rgba(255,255,255,0.8); border-radius: 50%; transform: translate(-50%, -50%); z-index: 1;"></div>
-                            <div style="position: absolute; left: 50%; top: 50%; width: 12px; height: 12px; background: white; border-radius: 50%; transform: translate(-50%, -50%); z-index: 1;"></div>
-                            <div style="position: absolute; left: 0; top: 50%; width: 180px; height: 220px; border: 6px solid rgba(255,255,255,0.8); border-left: none; transform: translateY(-50%); z-index: 1;"></div>
-                            <div style="position: absolute; right: 0; top: 50%; width: 180px; height: 220px; border: 6px solid rgba(255,255,255,0.8); border-right: none; transform: translateY(-50%); z-index: 1;"></div>
+                            <!-- Líneas del campo blancas puras -->
+                            <div style="position: absolute; left: 50%; top: 0; bottom: 0; width: 3px; background: rgba(255,255,255,0.85); transform: translateX(-50%); z-index: 1;"></div>
+                            <div style="position: absolute; left: 50%; top: 50%; width: 120px; height: 120px; border: 3px solid rgba(255,255,255,0.85); border-radius: 50%; transform: translate(-50%, -50%); z-index: 1;"></div>
+                            <div style="position: absolute; left: 50%; top: 50%; width: 8px; height: 8px; background: white; border-radius: 50%; transform: translate(-50%, -50%); z-index: 1;"></div>
+                            <div style="position: absolute; left: 0; top: 50%; width: 140px; height: 160px; border: 3px solid rgba(255,255,255,0.85); border-left: none; transform: translateY(-50%); z-index: 1;"></div>
+                            <div style="position: absolute; right: 0; top: 50%; width: 140px; height: 160px; border: 3px solid rgba(255,255,255,0.85); border-right: none; transform: translateY(-50%); z-index: 1;"></div>
                             
-                            <div style="width: 50%; height: 100%; display: flex; align-items: center; justify-content: center; position: relative; padding-right: 40px; z-index: 5;">${renderExportTeam(field.id + '-izq')}</div>
-                            <div style="width: 50%; height: 100%; display: flex; align-items: center; justify-content: center; position: relative; padding-left: 40px; z-index: 5;">${renderExportTeam(field.id + '-der')}</div>
+                            <div style="width: 50%; height: 100%; position: relative; z-index: 5;">${renderExportTeam(field.id + '-izq', true)}</div>
+                            <div style="width: 50%; height: 100%; position: relative; z-index: 5;">${renderExportTeam(field.id + '-der', false)}</div>
                         </div>
                     </div>
                 `;
             });
 
-            htmlContent += `</div><div style="text-align: center; margin-top: 40px; color: #475569; font-size: 16px; font-weight: bold;">Generado automáticamente por ATM GK Planer</div>`;
+            htmlContent += `</div><div style="text-align: center; margin-top: 30px; color: #64748b; font-size: 14px; font-weight: bold;">Generado automáticamente por ATM GK Planer</div>`;
             exportContainer.innerHTML = htmlContent; document.body.appendChild(exportContainer);
 
-            await new Promise(r => setTimeout(r, 600));
+            // Reducimos el tiempo de espera de renderizado al ser un contenedor más ligero
+            await new Promise(r => setTimeout(r, 250));
 
             try {
-                const canvas = await html2canvas(exportContainer, { scale: 2, backgroundColor: '#0f172a', useCORS: true });
+                // Escala reducida de 2 a 1.5. Mejora enorme en tiempo de procesado en móviles sin perder legibilidad.
+                const canvas = await html2canvas(exportContainer, { scale: 1.5, backgroundColor: '#1e293b', useCORS: true });
                 document.body.removeChild(exportContainer);
 
                 canvas.toBlob(async (blob) => {
