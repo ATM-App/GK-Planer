@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -6,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ATM GK Planer | Asignación de Espacios</title>
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
     <!-- FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="[https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css](https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css)">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="[https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap](https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap)" rel="stylesheet">
     <!-- Librería para generar Imágenes (Exportar) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="[https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js](https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js)"></script>
     
     <!-- Metadatos PWA y Favicon -->
     <meta name="theme-color" content="#CB3524">
@@ -116,7 +115,7 @@
         <div class="w-full px-3 md:px-4 h-14 md:h-16 flex items-center justify-between">
             <div class="flex items-center space-x-2 md:space-x-3 overflow-hidden w-full">
                 <div class="w-8 h-8 md:w-10 md:h-10 bg-white rounded-full flex items-center justify-center p-0.5 md:p-1 border-2 border-white/80 shadow-md shrink-0">
-                    <img src="ESCUDO%20ATM.png" alt="ATM Logo" class="w-full h-full object-contain" onerror="this.src='https://upload.wikimedia.org/wikipedia/en/f/f4/Atletico_Madrid_2017_logo.svg'">
+                    <img src="ESCUDO%20ATM.png" alt="ATM Logo" class="w-full h-full object-contain" onerror="this.src='[https://upload.wikimedia.org/wikipedia/en/f/f4/Atletico_Madrid_2017_logo.svg](https://upload.wikimedia.org/wikipedia/en/f/f4/Atletico_Madrid_2017_logo.svg)'">
                 </div>
                 <div class="truncate flex-1">
                     <h1 class="text-base md:text-xl font-bold tracking-wide truncate">ATM GK Planer</h1>
@@ -231,9 +230,9 @@
 
     <!-- Script Principal -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { initializeApp } from "[https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js](https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js)";
+        import { getAuth, signInAnonymously } from "[https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js](https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js)";
+        import { getFirestore, doc, setDoc, onSnapshot, getDoc } from "[https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js](https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js)";
 
         const TEAMS = [
             { id: 't1', name: 'Prebenjamín A', categoryColor: 'bg-orange-500' },
@@ -250,7 +249,7 @@
             assignments: {},   
             gkAssignments: {},
             customFields: [],
-            deletedFields: [], // Registro de campos (default o custom) eliminados
+            deletedFields: [], 
             savedDays: new Set(),
             viewMode: false
         };
@@ -390,7 +389,6 @@
         function renderGrid() {
             const container = document.getElementById('fields-container'); container.innerHTML = ''; 
             
-            // Filtramos los campos base para excluir los eliminados
             const baseFields = FIELDS.filter(f => !(state.deletedFields || []).includes(f.id));
             const allFields = [...baseFields, ...(state.customFields || [])];
 
@@ -609,7 +607,6 @@
 
         window.moveGhost = (x, y) => { if (!window.ghostEl) return; const posX = x - window.touchOffsetX; const posY = y - window.touchOffsetY; window.ghostEl.style.transform = `translate3d(${posX}px, ${posY}px, 0)`; };
 
-        // ACCIONES RÁPIDAS Y GESTIÓN DE CAMPOS
         window.triggerAutoAssign = () => {
             state.assignments = {}; state.gkAssignments = {}; const dateObj = new Date(state.date); const dayOfYear = Math.floor((dateObj - new Date(dateObj.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
             let teamIndex = dayOfYear % TEAMS.length; 
@@ -624,22 +621,11 @@
         window.addCustomField = () => { const input = document.getElementById('new-field-name'); const name = input.value.trim(); if (!name) return; if (!state.customFields) state.customFields = []; state.customFields.push({ id: 'c-ext-' + Date.now(), name: name }); input.value = ''; renderApp(); saveAssignments(); };
         
         window.deleteField = (id) => { 
-            // Si es un campo añadido manualmente
-            if (id.startsWith('c-ext-')) {
-                state.customFields = (state.customFields || []).filter(f => f.id !== id); 
-            } 
-            // Si es un campo base (Campo 3 o 4) lo ocultamos
-            else {
-                if (!state.deletedFields) state.deletedFields = [];
-                state.deletedFields.push(id);
-            }
-            
-            // Limpiar los equipos que estuvieran asignados a ese campo
+            if (id.startsWith('c-ext-')) { state.customFields = (state.customFields || []).filter(f => f.id !== id); } 
+            else { if (!state.deletedFields) state.deletedFields = []; state.deletedFields.push(id); }
             for (let key in state.assignments) { if (key.startsWith(id)) delete state.assignments[key]; } 
             for (let key in state.gkAssignments) { if (key.startsWith(id)) delete state.gkAssignments[key]; } 
-            
-            renderApp(); 
-            saveAssignments(); 
+            renderApp(); saveAssignments(); 
         };
 
         window.showToast = (msg, type = 'success') => { const toast = document.getElementById('toast'); const msgEl = document.getElementById('toast-message'); const icon = document.getElementById('toast-icon'); msgEl.innerText = msg; icon.className = type === 'error' ? 'fa-solid fa-circle-exclamation text-red-400' : 'fa-solid fa-circle-check text-green-400'; toast.classList.remove('translate-y-24', 'opacity-0'); setTimeout(() => toast.classList.add('translate-y-24', 'opacity-0'), 3000); };
@@ -668,7 +654,7 @@
         const dateInput = document.getElementById('current-date'); dateInput.value = state.date; updateDisplayDateUI();
         dateInput.addEventListener('change', (e) => { if(!e.target.value) return; state.date = e.target.value; updateDisplayDateUI(); listenToDate(state.date); });
 
-        // EXPORTAR A WHATSAPP: SISTEMA ROBUSTO DE DIBUJADO DE CAMPOS
+        // EXPORTAR: SISTEMA NATIVO DE DESCARGA FORZADA (Evita bloqueos en móviles)
         window.shareWhatsApp = async () => {
             window.showToast('Generando diseño...', 'success');
             const exportContainer = document.createElement('div');
@@ -676,7 +662,6 @@
             
             const fullDateStr = new Date(state.date).toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }); 
             const activeSlotText = TIME_SLOTS.find(s => s.id === state.activeSlot)?.time || ''; 
-            
             const baseFields = FIELDS.filter(f => !(state.deletedFields || []).includes(f.id));
             const allFields = [...baseFields, ...(state.customFields || [])];
 
@@ -732,21 +717,16 @@
                     <div style="background: #1e293b; border-radius: 24px; padding: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.3);">
                         <h3 style="font-size: 28px; font-weight: bold; color: white; text-align: center; margin: 0 0 25px 0;">📍 ${field.name}</h3>
                         <div style="height: 380px; position: relative; border-radius: 12px; border: 6px solid rgba(255,255,255,0.9); background-color: #4c962b; display: flex; overflow: hidden;">
-                            
-                            <!-- Dibujado de Franjas de Césped manuales a prueba de html2canvas -->
                             <div style="position: absolute; top: 0; bottom: 0; left: 0; width: 10%; background-color: #448924; z-index: 0;"></div>
                             <div style="position: absolute; top: 0; bottom: 0; left: 20%; width: 10%; background-color: #448924; z-index: 0;"></div>
                             <div style="position: absolute; top: 0; bottom: 0; left: 40%; width: 10%; background-color: #448924; z-index: 0;"></div>
                             <div style="position: absolute; top: 0; bottom: 0; left: 60%; width: 10%; background-color: #448924; z-index: 0;"></div>
                             <div style="position: absolute; top: 0; bottom: 0; left: 80%; width: 10%; background-color: #448924; z-index: 0;"></div>
-
-                            <!-- Líneas del campo -->
                             <div style="position: absolute; left: 50%; top: 0; bottom: 0; width: 6px; background: rgba(255,255,255,0.9); transform: translateX(-50%); z-index: 1;"></div>
                             <div style="position: absolute; left: 50%; top: 50%; width: 160px; height: 160px; border: 6px solid rgba(255,255,255,0.9); border-radius: 50%; transform: translate(-50%, -50%); z-index: 1;"></div>
                             <div style="position: absolute; left: 50%; top: 50%; width: 16px; height: 16px; background: white; border-radius: 50%; transform: translate(-50%, -50%); z-index: 1;"></div>
                             <div style="position: absolute; left: 0; top: 50%; width: 180px; height: 220px; border: 6px solid rgba(255,255,255,0.9); border-left: none; transform: translateY(-50%); z-index: 1;"></div>
                             <div style="position: absolute; right: 0; top: 50%; width: 180px; height: 220px; border: 6px solid rgba(255,255,255,0.9); border-right: none; transform: translateY(-50%); z-index: 1;"></div>
-                            
                             <div style="width: 50%; height: 100%; position: relative; z-index: 5;">${renderExportTeam(field.id + '-izq')}</div>
                             <div style="width: 50%; height: 100%; position: relative; z-index: 5;">${renderExportTeam(field.id + '-der')}</div>
                         </div>
@@ -761,12 +741,43 @@
             try {
                 const canvas = await html2canvas(exportContainer, { scale: 2, backgroundColor: '#0f172a', useCORS: true });
                 document.body.removeChild(exportContainer);
-                canvas.toBlob(async (blob) => {
-                    const filename = `ATM_GK_Planer_${state.date}_${state.activeSlot}.png`; const file = new File([blob], filename, { type: 'image/png' });
-                    if (navigator.canShare && navigator.canShare({ files: [file] })) { try { await navigator.share({ files: [file], title: 'Planificación ATM GK', text: `Planificación del ${fullDateStr}` }); window.showToast('Diseño compartido', 'success'); } catch(e) {} } 
-                    else { const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.download = filename; link.href = url; link.click(); URL.revokeObjectURL(url); window.showToast('Diseño descargado', 'success'); }
-                }, 'image/png');
-            } catch (err) { window.showToast('Error al generar la imagen', 'error'); if (document.body.contains(exportContainer)) document.body.removeChild(exportContainer); }
+                
+                const filename = `ATM_GK_Planer_${state.date}_${state.activeSlot}.png`;
+                const url = canvas.toDataURL('image/png'); // Usamos DataURL, es mucho más seguro en móviles
+                
+                // Intento 1: API Compartir Nativa (Nuevos móviles)
+                try {
+                    const res = await fetch(url);
+                    const blob = await res.blob();
+                    const file = new File([blob], filename, { type: 'image/png' });
+                    
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        await navigator.share({
+                            files: [file],
+                            title: 'Planificación ATM GK'
+                        });
+                        window.showToast('Diseño compartido', 'success');
+                        return;
+                    }
+                } catch (e) {
+                    console.log("Compartir falló, forzando descarga tradicional...");
+                }
+
+                // Intento 2: Descarga Nativa Forzada (Ordenadores y móviles que rechazan compartir)
+                const link = document.createElement('a');
+                link.download = filename;
+                link.href = url;
+                document.body.appendChild(link); // Vital inyectarlo en el DOM para engañar a Safari/Firefox
+                link.click();
+                setTimeout(() => {
+                    document.body.removeChild(link);
+                }, 100);
+                window.showToast('Diseño descargado', 'success');
+
+            } catch (err) { 
+                window.showToast('Error al generar la imagen', 'error'); 
+                if (document.body.contains(exportContainer)) document.body.removeChild(exportContainer); 
+            }
         };
 
         window.forceInstallModal = () => { document.getElementById('install-modal').classList.remove('hidden'); document.getElementById('install-modal').classList.add('flex'); };
