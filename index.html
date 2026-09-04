@@ -39,7 +39,7 @@
     </script>
 
     <style>
-        body { background-color: #f1f5f9; }
+        body { background-color: #f1f5f9; overscroll-behavior-y: none; }
         
         .drag-over {
             background-color: #fee2e2 !important;
@@ -79,17 +79,32 @@
             #install-app-btn { display: none !important; }
         }
         
-        /* Prevenir scroll en móviles al intentar arrastrar */
-        .touch-draggable { touch-action: none; user-select: none; -webkit-user-select: none; }
+        /* Prevenir scroll nativo en móviles al intentar arrastrar */
+        .touch-draggable { 
+            touch-action: none !important; 
+            user-select: none; 
+            -webkit-user-select: none; 
+            -webkit-touch-callout: none;
+        }
         
-        /* Asegurar que las notificaciones salgan por encima de todo en móvil */
         #toast { z-index: 999999 !important; }
+
+        /* Ajustes específicos para el layout móvil para evitar que la cabecera desaparezca */
+        #main-content-wrapper {
+            height: calc(100vh - 120px); /* Ajusta según la altura de tu cabecera + carrusel */
+        }
+        @media (min-width: 768px) {
+            #main-content-wrapper {
+                height: calc(100vh - 120px); /* Ajuste desktop */
+            }
+        }
     </style>
 </head>
 <body class="h-screen flex flex-col font-sans overflow-hidden text-slate-800">
 
     <!-- Modal de Instalación PWA -->
     <div id="install-modal" class="fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-sm hidden items-center justify-center p-4">
+        <!-- Contenido del modal PWA -->
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden transform transition-all border border-slate-100">
             <div class="bg-gradient-to-b from-atleti-blue to-slate-900 p-8 flex flex-col items-center justify-center text-center relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-full -mr-10 -mt-10"></div>
@@ -112,9 +127,10 @@
         </div>
     </div>
 
-    <!-- CABECERA -->
-    <header class="bg-atleti-red text-white shadow-md z-20 relative shrink-0">
-        <div class="max-w-screen-2xl mx-auto px-3 md:px-4 h-14 md:h-16 flex items-center justify-between">
+    <!-- CABECERA FIJA -->
+    <header class="bg-atleti-red text-white shadow-md z-20 shrink-0 w-full">
+        <!-- Fila Superior: Logo, Título y Controles -->
+        <div class="w-full px-3 md:px-4 h-14 md:h-16 flex items-center justify-between">
             <div class="flex items-center space-x-2 md:space-x-3 overflow-hidden w-full">
                 <div class="w-8 h-8 md:w-10 md:h-10 bg-white rounded-full flex items-center justify-center p-0.5 md:p-1 border-2 border-white/80 shadow-md shrink-0">
                     <img src="ESCUDO%20ATM.png" alt="ATM Logo" class="w-full h-full object-contain" onerror="this.src='https://upload.wikimedia.org/wikipedia/en/f/f4/Atletico_Madrid_2017_logo.svg'">
@@ -139,30 +155,36 @@
             </div>
         </div>
         
-        <!-- Carrusel de Fechas Rápido -->
-        <div class="bg-slate-900 border-t border-slate-700/50 h-12 md:h-14 flex items-center px-2 md:px-4 overflow-x-auto no-scrollbar shadow-inner" id="date-carousel"></div>
+        <!-- Carrusel de Fechas Rápido FIJO -->
+        <div class="bg-slate-900 border-t border-slate-700/50 h-12 md:h-14 flex items-center px-2 md:px-4 overflow-x-auto no-scrollbar shadow-inner w-full" id="date-carousel"></div>
     </header>
 
-    <main class="flex-1 flex flex-col md:flex-row overflow-hidden bg-slate-800">
+    <!-- CONTENEDOR PRINCIPAL FLUIDO -->
+    <!-- Calculamos la altura para que ocupe el resto de la pantalla y permita scroll interno -->
+    <main id="main-content-wrapper" class="w-full flex flex-col md:flex-row bg-slate-800">
         
-        <!-- Panel Izquierdo: Controles -->
-        <aside id="main-sidebar" class="w-full md:w-80 bg-white shadow-md flex flex-col z-10 shrink-0 border-b border-slate-200 md:border-b-0 h-auto md:h-full transition-all duration-300">
+        <!-- Panel Izquierdo: Controles (Se colapsa en Modo Vista) -->
+        <aside id="main-sidebar" class="w-full md:w-80 bg-white shadow-md flex flex-col z-10 shrink-0 border-b border-slate-200 md:border-b-0 h-[35vh] md:h-full transition-all duration-300">
             
-            <!-- Contenedor Equipos -->
-            <div class="p-2 md:p-4 bg-slate-50 border-b border-slate-100 flex flex-col shrink-0">
-                <div class="flex justify-between items-center mb-2">
+            <!-- Contenedor Equipos y Zona GK -->
+            <div class="p-2 md:p-4 bg-slate-50 border-b border-slate-100 flex flex-col flex-1 min-h-0">
+                <div class="flex justify-between items-center mb-2 shrink-0">
                     <h2 class="font-bold text-atleti-blue text-[10px] md:text-sm uppercase tracking-wide"><i class="fa-solid fa-users mr-1"></i> Equipos / Zona</h2>
                     <span id="unassigned-count" class="bg-slate-200 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
                 </div>
                 
-                <div class="flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto no-scrollbar space-x-2 md:space-x-0 md:space-y-3 pb-2 pt-1 md:pb-0 items-center md:items-stretch" id="unassigned-teams-container">
+                <!-- Área desplazable de equipos -->
+                <div class="flex-1 flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto no-scrollbar space-x-2 md:space-x-0 md:space-y-3 pb-2 pt-1 items-center md:items-stretch" id="unassigned-teams-container">
+                    
                     <!-- Marcador GK -->
+                    <!-- CLAVE: touch-draggable asignada -->
                     <div id="gk-marker" draggable="true" ondragstart="window.handleGKDragStart(event)" class="touch-draggable shrink-0 p-1.5 md:p-3 w-28 md:w-full rounded-lg border-2 border-atleti-red bg-red-50 text-atleti-red shadow-sm flex items-center justify-center cursor-grab transition-all border-dashed">
                         <i class="fa-solid fa-mitten text-sm md:text-lg mr-1.5"></i>
-                        <span class="font-bold text-[10px] md:text-sm leading-tight text-center">Zona GK</span>
+                        <span class="font-bold text-[10px] md:text-sm leading-tight text-center pointer-events-none">Zona GK</span>
                     </div>
+                    
                     <!-- Equipos No Asignados -->
-                    <div id="unassigned-teams" class="flex flex-row md:flex-col space-x-2 md:space-x-0 md:space-y-3 shrink-0" ondrop="window.handleDrop(event, 'unassigned')" ondragover="window.allowDrop(event)"></div>
+                    <div id="unassigned-teams" class="flex flex-row md:flex-col space-x-2 md:space-x-0 md:space-y-3 shrink-0 h-full" ondrop="window.handleDrop(event, 'unassigned')" ondragover="window.allowDrop(event)"></div>
                 </div>
             </div>
 
@@ -193,8 +215,8 @@
                 </div>
             </div>
 
-            <!-- Añadir Campo Extra -->
-            <div class="hidden md:block p-4 border-t border-slate-200 bg-slate-50 flex-1">
+            <!-- Añadir Campo Extra (Solo Desktop) -->
+            <div class="hidden md:block p-4 border-t border-slate-200 bg-slate-50 shrink-0">
                 <h2 class="font-bold text-atleti-blue text-xs uppercase tracking-wide mb-2"><i class="fa-solid fa-plus mr-2"></i>Añadir Campo (F7)</h2>
                 <div class="flex space-x-2">
                     <input type="text" id="new-field-name" placeholder="Ej: Campo 4-1" class="flex-1 text-sm px-2 py-1.5 rounded border border-slate-300 focus:outline-none focus:border-atleti-red">
@@ -205,9 +227,10 @@
             </div>
         </aside>
 
-        <!-- Matriz de Trabajo Específico -->
-        <section class="flex-1 flex flex-col overflow-hidden relative w-full transition-all duration-300">
-            <div class="h-10 md:h-14 border-b border-slate-700 flex items-center px-3 md:px-6 justify-between bg-slate-900 shadow-sm z-10 shrink-0">
+        <!-- Matriz de Trabajo Específico (Área de Campos) -->
+        <section class="flex-1 flex flex-col relative w-full h-[65vh] md:h-full transition-all duration-300">
+            <!-- Barra Horarios -->
+            <div class="h-10 md:h-14 border-b border-slate-700 flex items-center px-3 md:px-6 justify-between bg-slate-900 shadow-sm z-10 shrink-0 w-full">
                 <h3 class="text-[10px] md:text-lg font-semibold text-white truncate pr-2" id="display-date">Entrenamiento</h3>
                 <div class="flex space-x-1 bg-slate-800 p-0.5 md:p-1 rounded-lg border border-slate-700 shrink-0" id="time-tabs">
                     <button onclick="window.setTimeSlot('s1')" id="tab-s1" class="px-2 md:px-5 py-1 text-[10px] md:text-sm font-semibold rounded bg-atleti-red text-white shadow-sm transition-all whitespace-nowrap">
@@ -218,8 +241,11 @@
                     </button>
                 </div>
             </div>
-            <div class="flex-1 overflow-y-auto overflow-x-hidden p-3 md:p-8 no-scrollbar flex flex-col items-center space-y-6 md:space-y-10 relative pb-20" id="fields-container"></div>
             
+            <!-- Contenedor SCROLLABLE de los campos -->
+            <div class="flex-1 overflow-y-auto overflow-x-hidden p-3 md:p-8 no-scrollbar flex flex-col items-center space-y-6 md:space-y-10 relative pb-24 w-full" id="fields-container"></div>
+            
+            <!-- Toast Notification -->
             <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 md:translate-x-0 md:left-auto md:right-6 bg-slate-800 text-white px-4 py-3 rounded-lg shadow-2xl transform transition-transform translate-y-24 opacity-0 flex items-center space-x-3 pointer-events-none z-[999999] w-[90%] md:w-auto max-w-sm">
                 <i class="fa-solid fa-circle-check text-green-400" id="toast-icon"></i>
                 <span id="toast-message" class="text-xs md:text-sm font-medium">Guardado correctamente</span>
@@ -415,15 +441,22 @@
             state.viewMode = !state.viewMode;
             const sidebar = document.getElementById('main-sidebar');
             const toggleBtn = document.getElementById('view-mode-btn');
+            
+            // Buscar contenedor de campos para ajustar altura dinámicamente
+            const section = document.querySelector('section');
 
             if (state.viewMode) {
                 sidebar.classList.add('hidden');
+                section.classList.remove('h-[65vh]');
+                section.classList.add('h-full'); // Ocupa todo al colapsar el menú
                 toggleBtn.innerHTML = '<i class="fa-solid fa-eye-slash text-base md:text-lg"></i>';
                 toggleBtn.classList.add('bg-atleti-blue', 'border-transparent');
                 toggleBtn.classList.remove('bg-white/20');
                 window.showToast('Modo Vista Activado');
             } else {
                 sidebar.classList.remove('hidden');
+                section.classList.remove('h-full');
+                section.classList.add('h-[65vh]'); // Vuelve a su tamaño compartido en móvil
                 toggleBtn.innerHTML = '<i class="fa-solid fa-eye text-base md:text-lg"></i>';
                 toggleBtn.classList.remove('bg-atleti-blue', 'border-transparent');
                 toggleBtn.classList.add('bg-white/20');
@@ -561,7 +594,7 @@
                 if (!state.viewMode) {
                     card.draggable = true;
                     card.ondragstart = window.handleDragStart;
-                    card.classList.add('touch-draggable');
+                    card.classList.add('touch-draggable'); // CLAVE: Añadir clase para touch en equipos
                 }
                 
                 const activeSuffix = `-${state.activeSlot}`;
@@ -576,29 +609,31 @@
                     
                     if (targetZone) {
                         const span = targetZone.querySelector('span'); if(span) span.style.display = 'none';
-                        card.className = `${state.viewMode ? '' : 'cursor-grab transform hover:scale-105'} team-card-on-pitch w-[95%] md:w-[90%] max-w-[200px] p-1.5 md:p-4 rounded-xl border border-white/30 bg-atleti-blue/95 text-white shadow-[0_8px_15px_rgba(0,0,0,0.4)] backdrop-blur-sm flex flex-col md:flex-row items-center justify-center md:space-x-3 z-20 absolute`;
+                        // CLAVE: Asegurar touch-draggable en campos
+                        card.className = `touch-draggable ${state.viewMode ? '' : 'cursor-grab transform hover:scale-105'} team-card-on-pitch w-[95%] md:w-[90%] max-w-[200px] p-1.5 md:p-4 rounded-xl border border-white/30 bg-atleti-blue/95 text-white shadow-[0_8px_15px_rgba(0,0,0,0.4)] backdrop-blur-sm flex flex-col md:flex-row items-center justify-center md:space-x-3 z-20 absolute`;
                         card.innerHTML = `
-                            <div class="relative">
+                            <div class="relative pointer-events-none">
                                 <div class="w-6 h-6 md:w-12 md:h-12 rounded-full bg-white flex items-center justify-center shadow-inner p-1 shrink-0">
                                     <img src="ESCUDO%20ATM.png" alt="Atleti" class="w-full h-full object-contain drop-shadow-sm" onerror="this.style.display='none';">
                                 </div>
                                 ${categoryDot}
                             </div>
-                            <p class="font-bold text-[9px] md:text-sm text-center md:text-left leading-tight drop-shadow-md tracking-wide mt-1 md:mt-0 ${state.viewMode ? 'pointer-events-none' : ''}">${team.name}</p>
+                            <p class="font-bold text-[9px] md:text-sm text-center md:text-left leading-tight drop-shadow-md tracking-wide mt-1 md:mt-0 pointer-events-none">${team.name}</p>
                         `;
                         targetZone.appendChild(card); targetZone.classList.add('bg-black/20');
                     }
                 } else {
-                    card.className = `${state.viewMode ? '' : 'cursor-grab group hover:border-atleti-red/50'} team-card p-1.5 md:p-3 w-28 md:w-full shrink-0 rounded-lg border border-slate-200 bg-white text-slate-700 shadow-sm flex flex-col md:flex-row items-center md:justify-between`;
+                    // CLAVE: Asegurar touch-draggable en panel
+                    card.className = `touch-draggable ${state.viewMode ? '' : 'cursor-grab group hover:border-atleti-red/50'} team-card p-1.5 md:p-3 w-28 md:w-full shrink-0 rounded-lg border border-slate-200 bg-white text-slate-700 shadow-sm flex flex-col md:flex-row items-center md:justify-between`;
                     card.innerHTML = `
                         <div class="flex flex-col md:flex-row items-center space-y-1 md:space-y-0 md:space-x-3 pointer-events-none w-full">
-                            <div class="relative shrink-0">
+                            <div class="relative shrink-0 pointer-events-none">
                                 <div class="w-6 h-6 md:w-10 md:h-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center group-hover:bg-red-50 transition-colors p-1">
                                     <img src="ESCUDO%20ATM.png" alt="Atleti" class="w-full h-full object-contain drop-shadow-sm" onerror="this.style.display='none';">
                                 </div>
                                 ${categoryDot}
                             </div>
-                            <p class="font-bold text-[9px] md:text-sm leading-tight text-center md:text-left truncate w-full">${team.name}</p>
+                            <p class="font-bold text-[9px] md:text-sm leading-tight text-center md:text-left truncate w-full pointer-events-none">${team.name}</p>
                         </div>
                         ${state.viewMode ? '' : '<i class="hidden md:block fa-solid fa-grip-vertical text-slate-300 group-hover:text-atleti-red pointer-events-none transition-colors shrink-0"></i>'}
                     `;
@@ -621,34 +656,28 @@
             }
             document.getElementById('unassigned-count').innerText = unassignedCount;
             
+            // CLAVE: Asignar eventos táctiles DESPUÉS de renderizar elementos nuevos
             if (!state.viewMode) {
                 window.attachTouchListeners();
-            } else {
-                // Quitar listeners en modo vista
-                document.querySelectorAll('.touch-draggable').forEach(el => {
-                    el.removeEventListener('touchstart', window.handleTouchStart);
-                });
             }
         }
 
         function createBadge(key) {
-            // Lógica cíclica de tareas según petición
+            // Ciclo de tareas: T1-T2-T3 -> T1-T2 -> T1 -> T3
             let currentOptionIndex = 0;
             const taskOptions = [
-                ['T1', 'T2', 'T3'],      // 0: Defecto
-                ['T1', 'T2'],            // 1
-                ['T1'],                  // 2
-                ['T3']                   // 3: Nueva petición
+                ['T1', 'T2', 'T3'],      
+                ['T1', 'T2'],            
+                ['T1'],                  
+                ['T3']                   
             ];
 
             let tasks = state.gkAssignments[key];
             
-            // Si la tarea era antigua (solo 'true') o no es un array válido, ponemos por defecto
             if (tasks === true || !Array.isArray(tasks)) {
                 tasks = taskOptions[0];
                 state.gkAssignments[key] = tasks;
             } else {
-                // Buscamos en qué punto del ciclo estamos según lo que esté guardado
                 const tasksStr = tasks.join('-');
                 currentOptionIndex = taskOptions.findIndex(opt => opt.join('-') === tasksStr);
                 if (currentOptionIndex === -1) currentOptionIndex = 0; 
@@ -669,7 +698,6 @@
             badge.appendChild(tasksDisplay);
 
             if (!state.viewMode) {
-                // Botón cerrar (Solo visible en modo edición)
                 const closeBtn = document.createElement('i');
                 closeBtn.className = 'fa-solid fa-circle-xmark absolute -top-2 -right-2 bg-slate-900 text-white rounded-full border border-slate-700 cursor-pointer hover:text-red-400 hover:scale-110 transition-all text-xs md:text-sm shadow-md p-0.5';
                 
@@ -681,10 +709,8 @@
                 };
                 badge.appendChild(closeBtn);
 
-                // Clic para cambiar tareas
                 badge.onclick = (e) => {
                     e.stopPropagation();
-                    // Avanzamos al siguiente índice del array de opciones
                     currentOptionIndex = (currentOptionIndex + 1) % taskOptions.length;
                     state.gkAssignments[key] = taskOptions[currentOptionIndex];
                     tasksDisplay.innerText = state.gkAssignments[key].join(' - ');
@@ -711,7 +737,9 @@
             renderTeams(); 
         };
 
-        // DRAG & DROP
+        // ==========================================
+        // DRAG & DROP (DESKTOP)
+        // ==========================================
         window.allowDrop = (ev) => ev.preventDefault();
         window.dragEnter = (ev) => { ev.preventDefault(); const target = ev.target.closest('.pitch-bg div[id]'); if (target) target.classList.add('drop-target'); };
         window.dragLeave = (ev) => { const target = ev.target.closest('.pitch-bg div[id]'); if (target) target.classList.remove('drop-target'); };
@@ -727,7 +755,7 @@
             if (isGkMarker === "true") {
                 if (fullKey) { 
                     if (!state.gkAssignments) state.gkAssignments = {}; 
-                    if(!state.gkAssignments[fullKey]) state.gkAssignments[fullKey] = ['T1', 'T2', 'T3']; // Tareas por defecto
+                    if(!state.gkAssignments[fullKey]) state.gkAssignments[fullKey] = ['T1', 'T2', 'T3']; 
                     renderTeams(); 
                     saveAssignments(); 
                 }
@@ -745,57 +773,142 @@
             renderTeams(); saveAssignments();
         };
 
-        // TOUCH SUPPORT
-        window.draggedItem = null; window.ghostEl = null; window.gkMarkerTouch = false; window.currentDropZone = null; window.touchOffsetX = 0; window.touchOffsetY = 0;
+        // ==========================================
+        // TOUCH SUPPORT (MÓVIL & TABLET)
+        // ==========================================
+        window.draggedItem = null; 
+        window.ghostEl = null; 
+        window.gkMarkerTouch = false; 
+        window.currentDropZone = null; 
+        window.touchOffsetX = 0; 
+        window.touchOffsetY = 0;
+
         window.attachTouchListeners = () => {
-            if (state.viewMode) return; // Seguridad extra
+            if (state.viewMode) return; 
+            
             document.querySelectorAll('.touch-draggable').forEach(el => {
-                el.removeEventListener('touchstart', window.handleTouchStart); el.removeEventListener('touchmove', window.handleTouchMove); el.removeEventListener('touchend', window.handleTouchEnd); el.removeEventListener('touchcancel', window.handleTouchEnd);
-                el.addEventListener('touchstart', window.handleTouchStart, { passive: false }); el.addEventListener('touchmove', window.handleTouchMove, { passive: false }); el.addEventListener('touchend', window.handleTouchEnd, { passive: false }); el.addEventListener('touchcancel', window.handleTouchEnd, { passive: false });
+                // Eliminar antiguos para evitar duplicados
+                el.removeEventListener('touchstart', window.handleTouchStart); 
+                el.removeEventListener('touchmove', window.handleTouchMove); 
+                el.removeEventListener('touchend', window.handleTouchEnd); 
+                el.removeEventListener('touchcancel', window.handleTouchEnd);
+                
+                // Asignar nuevos con passive: false para permitir preventDefault y bloquear el scroll de pantalla al arrastrar
+                el.addEventListener('touchstart', window.handleTouchStart, { passive: false }); 
+                el.addEventListener('touchmove', window.handleTouchMove, { passive: false }); 
+                el.addEventListener('touchend', window.handleTouchEnd, { passive: false }); 
+                el.addEventListener('touchcancel', window.handleTouchEnd, { passive: false });
             });
         };
 
         window.handleTouchStart = (ev) => {
             if (state.viewMode) return;
             const target = ev.target.closest('.touch-draggable'); if (!target) return;
-            window.draggedItem = target; window.gkMarkerTouch = (target.id === 'gk-marker'); window.currentDropZone = null;
-            const touch = ev.touches[0]; const rect = target.getBoundingClientRect();
-            window.touchOffsetX = touch.clientX - rect.left; window.touchOffsetY = touch.clientY - rect.top;
             
+            window.draggedItem = target; 
+            window.gkMarkerTouch = (target.id === 'gk-marker'); 
+            window.currentDropZone = null;
+            
+            const touch = ev.touches[0]; 
+            const rect = target.getBoundingClientRect();
+            
+            // Calculamos el offset para que la tarjeta no salte
+            window.touchOffsetX = touch.clientX - rect.left; 
+            window.touchOffsetY = touch.clientY - rect.top;
+            
+            // Creamos el clon fantasma
             window.ghostEl = target.cloneNode(true);
+            
+            // Limpieza de clases y aplicación forzada de estilos
             window.ghostEl.classList.remove('absolute', 'relative', 'transform', 'hover:scale-105');
-            window.ghostEl.style.setProperty('position', 'fixed', 'important'); window.ghostEl.style.setProperty('z-index', '999999', 'important'); window.ghostEl.style.setProperty('opacity', '0.85', 'important'); window.ghostEl.style.setProperty('pointer-events', 'none', 'important'); window.ghostEl.style.setProperty('width', rect.width + 'px', 'important'); window.ghostEl.style.setProperty('height', rect.height + 'px', 'important'); window.ghostEl.style.setProperty('margin', '0', 'important'); window.ghostEl.style.setProperty('left', '0px', 'important'); window.ghostEl.style.setProperty('top', '0px', 'important'); window.ghostEl.style.setProperty('transform-origin', 'top left', 'important');
+            window.ghostEl.style.setProperty('position', 'fixed', 'important'); 
+            window.ghostEl.style.setProperty('z-index', '999999', 'important'); 
+            window.ghostEl.style.setProperty('opacity', '0.85', 'important'); 
+            window.ghostEl.style.setProperty('pointer-events', 'none', 'important'); 
+            window.ghostEl.style.setProperty('width', rect.width + 'px', 'important'); 
+            window.ghostEl.style.setProperty('height', rect.height + 'px', 'important'); 
+            window.ghostEl.style.setProperty('margin', '0', 'important'); 
+            window.ghostEl.style.setProperty('left', '0px', 'important'); 
+            window.ghostEl.style.setProperty('top', '0px', 'important'); 
+            window.ghostEl.style.setProperty('transform-origin', 'top left', 'important');
+            
             document.body.appendChild(window.ghostEl);
+            
             window.moveGhost(touch.clientX, touch.clientY);
         };
 
         window.handleTouchMove = (ev) => {
             if (!window.ghostEl) return;
+            // IMPORTANTE: Previene el scroll o refresco nativo en dispositivos táctiles
             if (ev.cancelable) ev.preventDefault(); 
-            const touch = ev.touches[0]; window.moveGhost(touch.clientX, touch.clientY);
-            const dropTargetEl = document.elementFromPoint(touch.clientX, touch.clientY); const dropZone = dropTargetEl ? dropTargetEl.closest('.pitch-bg div[id]') : null;
-            if (window.currentDropZone !== dropZone) { if (window.currentDropZone) window.currentDropZone.classList.remove('drop-target'); if (dropZone) dropZone.classList.add('drop-target'); window.currentDropZone = dropZone; }
+            
+            const touch = ev.touches[0]; 
+            window.moveGhost(touch.clientX, touch.clientY);
+            
+            // Identificar zona de caída
+            const dropTargetEl = document.elementFromPoint(touch.clientX, touch.clientY); 
+            const dropZone = dropTargetEl ? dropTargetEl.closest('.pitch-bg div[id]') : null;
+            
+            if (window.currentDropZone !== dropZone) { 
+                if (window.currentDropZone) window.currentDropZone.classList.remove('drop-target'); 
+                if (dropZone) dropZone.classList.add('drop-target'); 
+                window.currentDropZone = dropZone; 
+            }
         };
 
         window.handleTouchEnd = (ev) => {
             if (!window.draggedItem || !window.ghostEl) return;
-            const touch = ev.changedTouches[0]; window.ghostEl.remove(); window.ghostEl = null;
-            if (window.currentDropZone) { window.currentDropZone.classList.remove('drop-target'); window.currentDropZone = null; }
+            
+            const touch = ev.changedTouches[0]; 
+            window.ghostEl.remove(); 
+            window.ghostEl = null;
+            
+            if (window.currentDropZone) { 
+                window.currentDropZone.classList.remove('drop-target'); 
+                window.currentDropZone = null; 
+            }
 
-            const dropTargetEl = document.elementFromPoint(touch.clientX, touch.clientY); const dropZone = dropTargetEl ? dropTargetEl.closest('.pitch-bg div[id]') : null;
+            const dropTargetEl = document.elementFromPoint(touch.clientX, touch.clientY); 
+            const dropZone = dropTargetEl ? dropTargetEl.closest('.pitch-bg div[id]') : null;
+            
             let spaceId = 'unassigned';
-            if (dropZone) spaceId = dropZone.id; else if (dropTargetEl && (dropTargetEl.closest('#unassigned-teams') || dropTargetEl.closest('#unassigned-teams-container'))) spaceId = 'unassigned'; else { window.draggedItem = null; window.gkMarkerTouch = false; return; }
+            if (dropZone) {
+                spaceId = dropZone.id; 
+            } else if (dropTargetEl && (dropTargetEl.closest('#unassigned-teams') || dropTargetEl.closest('#unassigned-teams-container'))) {
+                spaceId = 'unassigned'; 
+            } else { 
+                window.draggedItem = null; 
+                window.gkMarkerTouch = false; 
+                return; 
+            }
 
-            const mockEv = { preventDefault: () => {}, dataTransfer: { getData: (type) => { if (type === 'gkMarker') return window.gkMarkerTouch ? "true" : null; if (type === 'teamId' && !window.gkMarkerTouch) return window.draggedItem.id.replace('team-', ''); return null; } } };
+            // Simular DataTransfer para reutilizar lógica HandleDrop
+            const mockEv = { 
+                preventDefault: () => {}, 
+                dataTransfer: { 
+                    getData: (type) => { 
+                        if (type === 'gkMarker') return window.gkMarkerTouch ? "true" : null; 
+                        if (type === 'teamId' && !window.gkMarkerTouch) return window.draggedItem.id.replace('team-', ''); 
+                        return null; 
+                    } 
+                } 
+            };
+            
             window.handleDrop(mockEv, spaceId);
-            window.draggedItem = null; window.gkMarkerTouch = false;
+            window.draggedItem = null; 
+            window.gkMarkerTouch = false;
         };
 
         window.moveGhost = (x, y) => {
             if (!window.ghostEl) return;
-            const posX = x - window.touchOffsetX; const posY = y - window.touchOffsetY; window.ghostEl.style.transform = `translate3d(${posX}px, ${posY}px, 0)`;
+            const posX = x - window.touchOffsetX; 
+            const posY = y - window.touchOffsetY; 
+            window.ghostEl.style.transform = `translate3d(${posX}px, ${posY}px, 0)`;
         };
 
+        // ==========================================
+        // OTRAS FUNCIONES (AutoAssign, CustomFields, Export)
+        // ==========================================
         window.triggerAutoAssign = () => {
             state.assignments = {}; state.gkAssignments = {}; 
             const dateObj = new Date(state.date); const dayOfYear = Math.floor((dateObj - new Date(dateObj.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
@@ -821,7 +934,6 @@
             renderApp(); saveAssignments();
         };
 
-        // UI HELPERS & BOOTSTRAP
         window.showToast = (msg, type = 'success') => {
             const toast = document.getElementById('toast'); const msgEl = document.getElementById('toast-message'); const icon = document.getElementById('toast-icon');
             msgEl.innerText = msg; icon.className = type === 'error' ? 'fa-solid fa-circle-exclamation text-red-400' : 'fa-solid fa-circle-check text-green-400';
@@ -884,7 +996,6 @@
                 let content = '';
 
                 if (hasGK) {
-                    // Si hay tareas configuradas, mostrar esas, sino T1-T2-T3 por defecto
                     let tasksStr = 'T1 - T2 - T3';
                     if (Array.isArray(hasGK)) tasksStr = hasGK.length > 0 ? hasGK.join(' - ') : 'Libre';
                     
