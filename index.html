@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ATM GK Planer | Asignación de Espacios</title>
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
     <!-- FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="[https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css](https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css)">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="[https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap](https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap)" rel="stylesheet">
     <!-- Librería para generar Imágenes (Exportar) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="[https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js](https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js)"></script>
     
     <!-- Metadatos PWA y Favicon -->
     <meta name="theme-color" content="#CB3524">
@@ -91,11 +91,11 @@
 
         /* Ajustes específicos para el layout móvil para evitar que la cabecera desaparezca */
         #main-content-wrapper {
-            height: calc(100vh - 120px); /* Ajusta según la altura de tu cabecera + carrusel */
+            height: calc(100vh - 120px);
         }
         @media (min-width: 768px) {
             #main-content-wrapper {
-                height: calc(100vh - 120px); /* Ajuste desktop */
+                height: calc(100vh - 120px);
             }
         }
     </style>
@@ -133,7 +133,7 @@
         <div class="w-full px-3 md:px-4 h-14 md:h-16 flex items-center justify-between">
             <div class="flex items-center space-x-2 md:space-x-3 overflow-hidden w-full">
                 <div class="w-8 h-8 md:w-10 md:h-10 bg-white rounded-full flex items-center justify-center p-0.5 md:p-1 border-2 border-white/80 shadow-md shrink-0">
-                    <img src="ESCUDO%20ATM.png" alt="ATM Logo" class="w-full h-full object-contain" onerror="this.src='https://upload.wikimedia.org/wikipedia/en/f/f4/Atletico_Madrid_2017_logo.svg'">
+                    <img src="ESCUDO%20ATM.png" alt="ATM Logo" class="w-full h-full object-contain" onerror="this.src='[https://upload.wikimedia.org/wikipedia/en/f/f4/Atletico_Madrid_2017_logo.svg](https://upload.wikimedia.org/wikipedia/en/f/f4/Atletico_Madrid_2017_logo.svg)'">
                 </div>
                 <div class="truncate flex-1">
                     <h1 class="text-base md:text-xl font-bold tracking-wide truncate">ATM GK Planer</h1>
@@ -160,10 +160,9 @@
     </header>
 
     <!-- CONTENEDOR PRINCIPAL FLUIDO -->
-    <!-- Calculamos la altura para que ocupe el resto de la pantalla y permita scroll interno -->
     <main id="main-content-wrapper" class="w-full flex flex-col md:flex-row bg-slate-800">
         
-        <!-- Panel Izquierdo: Controles (Se colapsa en Modo Vista) -->
+        <!-- Panel Izquierdo: Controles -->
         <aside id="main-sidebar" class="w-full md:w-80 bg-white shadow-md flex flex-col z-10 shrink-0 border-b border-slate-200 md:border-b-0 h-[35vh] md:h-full transition-all duration-300">
             
             <!-- Contenedor Equipos y Zona GK -->
@@ -173,18 +172,17 @@
                     <span id="unassigned-count" class="bg-slate-200 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
                 </div>
                 
-                <!-- Área desplazable de equipos -->
-                <div class="flex-1 flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto no-scrollbar space-x-2 md:space-x-0 md:space-y-3 pb-2 pt-1 items-center md:items-stretch" id="unassigned-teams-container">
+                <!-- ÁREA DE EQUIPOS MODIFICADA (GRID PARA VER TODOS A LA VEZ EN MÓVIL) -->
+                <div class="flex-1 overflow-y-auto no-scrollbar pb-2 pt-1 flex flex-col space-y-2 md:space-y-3 w-full" id="unassigned-teams-container">
                     
                     <!-- Marcador GK -->
-                    <!-- CLAVE: touch-draggable asignada -->
-                    <div id="gk-marker" draggable="true" ondragstart="window.handleGKDragStart(event)" class="touch-draggable shrink-0 p-1.5 md:p-3 w-28 md:w-full rounded-lg border-2 border-atleti-red bg-red-50 text-atleti-red shadow-sm flex items-center justify-center cursor-grab transition-all border-dashed">
+                    <div id="gk-marker" draggable="true" ondragstart="window.handleGKDragStart(event)" class="touch-draggable shrink-0 p-1.5 md:p-3 w-full rounded-lg border-2 border-atleti-red bg-red-50 text-atleti-red shadow-sm flex items-center justify-center cursor-grab transition-all border-dashed">
                         <i class="fa-solid fa-mitten text-sm md:text-lg mr-1.5"></i>
-                        <span class="font-bold text-[10px] md:text-sm leading-tight text-center pointer-events-none">Zona GK</span>
+                        <span class="font-bold text-[11px] md:text-sm leading-tight text-center pointer-events-none">Zona GK</span>
                     </div>
                     
-                    <!-- Equipos No Asignados -->
-                    <div id="unassigned-teams" class="flex flex-row md:flex-col space-x-2 md:space-x-0 md:space-y-3 shrink-0 h-full" ondrop="window.handleDrop(event, 'unassigned')" ondragover="window.allowDrop(event)"></div>
+                    <!-- Equipos No Asignados (GRID) -->
+                    <div id="unassigned-teams" class="grid grid-cols-2 md:grid-cols-1 gap-2 md:gap-3 w-full shrink-0" ondrop="window.handleDrop(event, 'unassigned')" ondragover="window.allowDrop(event)"></div>
                 </div>
             </div>
 
@@ -215,7 +213,7 @@
                 </div>
             </div>
 
-            <!-- Añadir Campo Extra (Solo Desktop) -->
+            <!-- Añadir Campo Extra -->
             <div class="hidden md:block p-4 border-t border-slate-200 bg-slate-50 shrink-0">
                 <h2 class="font-bold text-atleti-blue text-xs uppercase tracking-wide mb-2"><i class="fa-solid fa-plus mr-2"></i>Añadir Campo (F7)</h2>
                 <div class="flex space-x-2">
@@ -255,11 +253,11 @@
 
     <!-- Script Principal -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { initializeApp } from "[https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js](https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js)";
+        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "[https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js](https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js)";
+        import { getFirestore, doc, setDoc, onSnapshot, getDoc } from "[https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js](https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js)";
 
-        // CONFIGURACIÓN Y DATOS BASE CON COLORES DE CATEGORÍA
+        // CONFIGURACIÓN Y DATOS BASE
         const TEAMS = [
             { id: 't1', name: 'Prebenjamín A', categoryColor: 'bg-orange-500' },
             { id: 't2', name: 'Benjamín B', categoryColor: 'bg-blue-400' },
@@ -283,8 +281,9 @@
             assignments: {},   
             gkAssignments: {},
             customFields: [],
+            deletedFields: [], // Registro de campos eliminados
             savedDays: new Set(),
-            viewMode: false // Modo Coordinador
+            viewMode: false
         };
 
         let db, auth, appId;
@@ -304,11 +303,12 @@
                     state.assignments = parsed.data || {};
                     state.gkAssignments = parsed.gkData || {};
                     state.customFields = parsed.customFields || [];
+                    state.deletedFields = parsed.deletedFields || [];
                 } else {
-                    state.assignments = {}; state.gkAssignments = {}; state.customFields = [];
+                    state.assignments = {}; state.gkAssignments = {}; state.customFields = []; state.deletedFields = [];
                 }
             } catch(e) {
-                state.assignments = {}; state.gkAssignments = {}; state.customFields = [];
+                state.assignments = {}; state.gkAssignments = {}; state.customFields = []; state.deletedFields = [];
             }
             renderApp();
         }
@@ -363,12 +363,14 @@
             try {
                 unsubscribeSnapshot = onSnapshot(docRef, (docSnap) => {
                     if (docSnap.exists()) {
-                        state.assignments = docSnap.data().data || {};
-                        state.gkAssignments = docSnap.data().gkData || {};
-                        state.customFields = docSnap.data().customFields || [];
-                        saveToLocalStorage(dateStr, docSnap.data());
+                        const data = docSnap.data();
+                        state.assignments = data.data || {};
+                        state.gkAssignments = data.gkData || {};
+                        state.customFields = data.customFields || [];
+                        state.deletedFields = data.deletedFields || [];
+                        saveToLocalStorage(dateStr, data);
                     } else {
-                        state.assignments = {}; state.gkAssignments = {}; state.customFields = [];
+                        state.assignments = {}; state.gkAssignments = {}; state.customFields = []; state.deletedFields = [];
                     }
                     renderApp();
                 }, (error) => {
@@ -382,9 +384,9 @@
         }
 
         async function saveAssignments(manual = false) {
-            const hasData = Object.keys(state.assignments).length > 0 || Object.keys(state.gkAssignments || {}).length > 0 || (state.customFields && state.customFields.length > 0);
+            const hasData = Object.keys(state.assignments).length > 0 || Object.keys(state.gkAssignments || {}).length > 0 || (state.customFields && state.customFields.length > 0) || (state.deletedFields && state.deletedFields.length > 0);
             const dataToSave = { 
-                data: state.assignments, gkData: state.gkAssignments || {}, customFields: state.customFields || [], hasData: hasData 
+                data: state.assignments, gkData: state.gkAssignments || {}, customFields: state.customFields || [], deletedFields: state.deletedFields || [], hasData: hasData 
             };
 
             saveToLocalStorage(state.date, dataToSave);
@@ -441,14 +443,12 @@
             state.viewMode = !state.viewMode;
             const sidebar = document.getElementById('main-sidebar');
             const toggleBtn = document.getElementById('view-mode-btn');
-            
-            // Buscar contenedor de campos para ajustar altura dinámicamente
             const section = document.querySelector('section');
 
             if (state.viewMode) {
                 sidebar.classList.add('hidden');
                 section.classList.remove('h-[65vh]');
-                section.classList.add('h-full'); // Ocupa todo al colapsar el menú
+                section.classList.add('h-full');
                 toggleBtn.innerHTML = '<i class="fa-solid fa-eye-slash text-base md:text-lg"></i>';
                 toggleBtn.classList.add('bg-atleti-blue', 'border-transparent');
                 toggleBtn.classList.remove('bg-white/20');
@@ -456,7 +456,7 @@
             } else {
                 sidebar.classList.remove('hidden');
                 section.classList.remove('h-full');
-                section.classList.add('h-[65vh]'); // Vuelve a su tamaño compartido en móvil
+                section.classList.add('h-[65vh]');
                 toggleBtn.innerHTML = '<i class="fa-solid fa-eye text-base md:text-lg"></i>';
                 toggleBtn.classList.remove('bg-atleti-blue', 'border-transparent');
                 toggleBtn.classList.add('bg-white/20');
@@ -473,21 +473,21 @@
             
             let dataFound = false;
 
-            // 1. Buscar en Firebase
             if (db && !isOfflineMode) {
                 try {
                     const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'assignments', prevDateStr);
                     const snap = await getDoc(docRef);
                     if (snap.exists() && snap.data().hasData) {
-                        state.assignments = snap.data().data || {};
-                        state.gkAssignments = snap.data().gkData || {};
-                        state.customFields = snap.data().customFields || [];
+                        const data = snap.data();
+                        state.assignments = data.data || {};
+                        state.gkAssignments = data.gkData || {};
+                        state.customFields = data.customFields || [];
+                        state.deletedFields = data.deletedFields || [];
                         dataFound = true;
                     }
                 } catch(e) {}
             }
 
-            // 2. Buscar en LocalStorage si falla Firebase
             if (!dataFound) {
                 try {
                     const localData = localStorage.getItem(`atm_gk_${prevDateStr}`);
@@ -497,6 +497,7 @@
                             state.assignments = parsed.data || {};
                             state.gkAssignments = parsed.gkData || {};
                             state.customFields = parsed.customFields || [];
+                            state.deletedFields = parsed.deletedFields || [];
                             dataFound = true;
                         }
                     }
@@ -523,11 +524,13 @@
         function renderGrid() {
             const container = document.getElementById('fields-container');
             container.innerHTML = ''; 
-            const allFields = [...FIELDS, ...(state.customFields || [])];
+            
+            // Filtrar campos eliminados
+            const baseFields = FIELDS.filter(f => !(state.deletedFields || []).includes(f.id));
+            const allFields = [...baseFields, ...(state.customFields || [])];
 
             allFields.forEach(field => {
-                const isCustom = field.id.startsWith('c-ext-');
-                const deleteBtn = (isCustom && !state.viewMode) ? `<button onclick="window.deleteCustomField('${field.id}')" class="ml-3 text-red-300 hover:text-red-500 transition-colors" title="Eliminar campo"><i class="fa-solid fa-trash"></i></button>` : '';
+                const deleteBtn = (!state.viewMode) ? `<button onclick="window.deleteField('${field.id}')" class="ml-3 text-red-300 hover:text-red-500 transition-colors" title="Eliminar campo"><i class="fa-solid fa-trash"></i></button>` : '';
 
                 const fieldHTML = `
                     <div class="w-full max-w-4xl flex flex-col items-center">
@@ -590,17 +593,15 @@
                 const card = document.createElement('div');
                 card.id = `team-${team.id}`;
                 
-                // Si no estamos en modo vista, se puede arrastrar
                 if (!state.viewMode) {
                     card.draggable = true;
                     card.ondragstart = window.handleDragStart;
-                    card.classList.add('touch-draggable'); // CLAVE: Añadir clase para touch en equipos
+                    card.classList.add('touch-draggable');
                 }
                 
                 const activeSuffix = `-${state.activeSlot}`;
                 const assignedKey = Object.keys(state.assignments).find(key => state.assignments[key] === team.id && key.endsWith(activeSuffix));
 
-                // Indicador de color de categoría
                 const categoryDot = `<div class="absolute -top-1 -right-1 w-3 h-3 md:w-4 md:h-4 rounded-full ${team.categoryColor} border-2 border-white shadow-sm z-30"></div>`;
 
                 if (assignedKey) {
@@ -609,7 +610,6 @@
                     
                     if (targetZone) {
                         const span = targetZone.querySelector('span'); if(span) span.style.display = 'none';
-                        // CLAVE: Asegurar touch-draggable en campos
                         card.className = `touch-draggable ${state.viewMode ? '' : 'cursor-grab transform hover:scale-105'} team-card-on-pitch w-[95%] md:w-[90%] max-w-[200px] p-1.5 md:p-4 rounded-xl border border-white/30 bg-atleti-blue/95 text-white shadow-[0_8px_15px_rgba(0,0,0,0.4)] backdrop-blur-sm flex flex-col md:flex-row items-center justify-center md:space-x-3 z-20 absolute`;
                         card.innerHTML = `
                             <div class="relative pointer-events-none">
@@ -623,8 +623,8 @@
                         targetZone.appendChild(card); targetZone.classList.add('bg-black/20');
                     }
                 } else {
-                    // CLAVE: Asegurar touch-draggable en panel. REDUCIDO PADDING Y H-FIT EN MÓVIL
-                    card.className = `touch-draggable ${state.viewMode ? '' : 'cursor-grab group hover:border-atleti-red/50'} team-card p-1.5 md:p-3 w-28 md:w-full shrink-0 h-fit rounded-lg border border-slate-200 bg-white text-slate-700 shadow-sm flex flex-col md:flex-row items-center md:justify-between`;
+                    // SE USA W-FULL PARA QUE EN EL GRID OCUPEN EL ESPACIO CORRECTO
+                    card.className = `touch-draggable ${state.viewMode ? '' : 'cursor-grab group hover:border-atleti-red/50'} team-card p-1.5 md:p-3 w-full shrink-0 h-fit rounded-lg border border-slate-200 bg-white text-slate-700 shadow-sm flex flex-col md:flex-row items-center md:justify-between`;
                     card.innerHTML = `
                         <div class="flex flex-col md:flex-row items-center space-y-1 md:space-y-0 md:space-x-3 pointer-events-none w-full">
                             <div class="relative shrink-0 pointer-events-none">
@@ -656,14 +656,12 @@
             }
             document.getElementById('unassigned-count').innerText = unassignedCount;
             
-            // CLAVE: Asignar eventos táctiles DESPUÉS de renderizar elementos nuevos
             if (!state.viewMode) {
                 window.attachTouchListeners();
             }
         }
 
         function createBadge(key) {
-            // Ciclo de tareas: T1-T2-T3 -> T1-T2 -> T1 -> T3
             let currentOptionIndex = 0;
             const taskOptions = [
                 ['T1', 'T2', 'T3'],      
@@ -787,13 +785,11 @@
             if (state.viewMode) return; 
             
             document.querySelectorAll('.touch-draggable').forEach(el => {
-                // Eliminar antiguos para evitar duplicados
                 el.removeEventListener('touchstart', window.handleTouchStart); 
                 el.removeEventListener('touchmove', window.handleTouchMove); 
                 el.removeEventListener('touchend', window.handleTouchEnd); 
                 el.removeEventListener('touchcancel', window.handleTouchEnd);
                 
-                // Asignar nuevos con passive: false para permitir preventDefault y bloquear el scroll de pantalla al arrastrar
                 el.addEventListener('touchstart', window.handleTouchStart, { passive: false }); 
                 el.addEventListener('touchmove', window.handleTouchMove, { passive: false }); 
                 el.addEventListener('touchend', window.handleTouchEnd, { passive: false }); 
@@ -812,14 +808,11 @@
             const touch = ev.touches[0]; 
             const rect = target.getBoundingClientRect();
             
-            // Calculamos el offset para que la tarjeta no salte
             window.touchOffsetX = touch.clientX - rect.left; 
             window.touchOffsetY = touch.clientY - rect.top;
             
-            // Creamos el clon fantasma
             window.ghostEl = target.cloneNode(true);
             
-            // Limpieza de clases y aplicación forzada de estilos
             window.ghostEl.classList.remove('absolute', 'relative', 'transform', 'hover:scale-105');
             window.ghostEl.style.setProperty('position', 'fixed', 'important'); 
             window.ghostEl.style.setProperty('z-index', '999999', 'important'); 
@@ -839,13 +832,11 @@
 
         window.handleTouchMove = (ev) => {
             if (!window.ghostEl) return;
-            // IMPORTANTE: Previene el scroll o refresco nativo en dispositivos táctiles
             if (ev.cancelable) ev.preventDefault(); 
             
             const touch = ev.touches[0]; 
             window.moveGhost(touch.clientX, touch.clientY);
             
-            // Identificar zona de caída
             const dropTargetEl = document.elementFromPoint(touch.clientX, touch.clientY); 
             const dropZone = dropTargetEl ? dropTargetEl.closest('.pitch-bg div[id]') : null;
             
@@ -882,7 +873,6 @@
                 return; 
             }
 
-            // Simular DataTransfer para reutilizar lógica HandleDrop
             const mockEv = { 
                 preventDefault: () => {}, 
                 dataTransfer: { 
@@ -907,13 +897,14 @@
         };
 
         // ==========================================
-        // OTRAS FUNCIONES (AutoAssign, CustomFields, Export)
+        // OTRAS FUNCIONES Y BORRAR CAMPO
         // ==========================================
         window.triggerAutoAssign = () => {
             state.assignments = {}; state.gkAssignments = {}; 
             const dateObj = new Date(state.date); const dayOfYear = Math.floor((dateObj - new Date(dateObj.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
             let teamIndex = dayOfYear % TEAMS.length;
-            const allFields = [...FIELDS, ...(state.customFields || [])];
+            const baseFields = FIELDS.filter(f => !(state.deletedFields || []).includes(f.id));
+            const allFields = [...baseFields, ...(state.customFields || [])];
             const ALL_SPACES = []; allFields.forEach(f => { ALL_SPACES.push(`${f.id}-izq`); ALL_SPACES.push(`${f.id}-der`); });
             TIME_SLOTS.forEach(slot => { ALL_SPACES.forEach(spaceId => { if (teamIndex < TEAMS.length) { const team = TEAMS[teamIndex]; state.assignments[`${spaceId}-${slot.id}`] = team.id; teamIndex++; } }); teamIndex = 0; });
             renderTeams(); saveAssignments();
@@ -927,8 +918,14 @@
             input.value = ''; renderApp(); saveAssignments();
         };
 
-        window.deleteCustomField = (id) => {
-            if (!state.customFields) return; state.customFields = state.customFields.filter(f => f.id !== id);
+        // NUEVA FUNCION: Borrar Campo
+        window.deleteField = (id) => {
+            if (id.startsWith('c-ext-')) {
+                state.customFields = (state.customFields || []).filter(f => f.id !== id);
+            } else {
+                if (!state.deletedFields) state.deletedFields = [];
+                if (!state.deletedFields.includes(id)) state.deletedFields.push(id);
+            }
             for (let key in state.assignments) { if (key.startsWith(id)) delete state.assignments[key]; }
             for (let key in state.gkAssignments) { if (key.startsWith(id)) delete state.gkAssignments[key]; }
             renderApp(); saveAssignments();
@@ -970,14 +967,16 @@
         const dateInput = document.getElementById('current-date'); dateInput.value = state.date; updateDisplayDateUI();
         dateInput.addEventListener('change', (e) => { if(!e.target.value) return; state.date = e.target.value; updateDisplayDateUI(); listenToDate(state.date); });
 
-        // EXPORTAR DISEÑO A WHATSAPP
+        // EXPORTAR DISEÑO A WHATSAPP: SISTEMA ROBUSTO
         window.shareWhatsApp = async () => {
             window.showToast('Generando diseño profesional...', 'success');
             
             const exportContainer = document.createElement('div');
             exportContainer.style.position = 'absolute'; exportContainer.style.left = '-10000px'; exportContainer.style.top = '0'; exportContainer.style.width = '1200px'; exportContainer.style.backgroundColor = '#0f172a'; exportContainer.style.fontFamily = "'Inter', sans-serif"; exportContainer.style.padding = '40px'; exportContainer.style.color = 'white';
             
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }; const fullDateStr = new Date(state.date).toLocaleDateString('es-ES', options); const activeSlotText = TIME_SLOTS.find(s => s.id === state.activeSlot)?.time || ''; const allFields = [...FIELDS, ...(state.customFields || [])];
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }; const fullDateStr = new Date(state.date).toLocaleDateString('es-ES', options); const activeSlotText = TIME_SLOTS.find(s => s.id === state.activeSlot)?.time || ''; 
+            const baseFields = FIELDS.filter(f => !(state.deletedFields || []).includes(f.id));
+            const allFields = [...baseFields, ...(state.customFields || [])];
 
             let htmlContent = `
                 <div style="display: flex; align-items: center; border-bottom: 4px solid #CB3524; padding-bottom: 25px; margin-bottom: 40px;">
@@ -993,13 +992,13 @@
             const renderExportTeam = (spaceId) => {
                 const assignedTeamId = state.assignments[`${spaceId}-${state.activeSlot}`];
                 const hasGK = state.gkAssignments[`${spaceId}-${state.activeSlot}`];
-                let content = '';
+                let content = '<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; gap: 15px;">';
 
                 if (hasGK) {
                     let tasksStr = 'T1 - T2 - T3';
                     if (Array.isArray(hasGK)) tasksStr = hasGK.length > 0 ? hasGK.join(' - ') : 'Libre';
                     
-                    content += `<div style="position: absolute; top: -30px; left: 50%; transform: translateX(-50%); background: #CB3524; color: white; padding: 6px 20px; border-radius: 12px; font-size: 14px; font-weight: bold; z-index: 10; border: 2px solid white; display: flex; flex-direction: column; align-items: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
+                    content += `<div style="background: #CB3524; color: white; padding: 6px 20px; border-radius: 12px; font-size: 14px; font-weight: bold; z-index: 10; border: 2px solid white; display: flex; flex-direction: column; align-items: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
                         <span style="margin-bottom: 3px;">🛡️ ZONA GK</span>
                         <span style="font-size: 11px; color: #fecaca; letter-spacing: 1px;">${tasksStr}</span>
                     </div>`;
@@ -1021,6 +1020,7 @@
                 } else {
                      content += `<div style="color: rgba(255,255,255,0.4); font-size: 16px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; background: rgba(0,0,0,0.4); padding: 8px 24px; border-radius: 30px;">Libre</div>`;
                 }
+                content += '</div>';
                 return content;
             };
 
@@ -1028,14 +1028,21 @@
                 htmlContent += `
                     <div style="background: #1e293b; border-radius: 24px; padding: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.3);">
                         <h3 style="font-size: 28px; font-weight: bold; color: white; text-align: center; margin: 0 0 25px 0;">📍 ${field.name}</h3>
-                        <div style="height: 380px; position: relative; border-radius: 12px; border: 6px solid rgba(255,255,255,0.8); background: repeating-linear-gradient(90deg, #4c962b, #4c962b 5.5%, #448924 5.5%, #448924 11%); overflow: hidden; display: flex;">
-                            <div style="position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: rgba(255,255,255,0.8); transform: translateX(-50%);"></div>
-                            <div style="position: absolute; left: 50%; top: 50%; width: 160px; height: 160px; border: 4px solid rgba(255,255,255,0.8); border-radius: 50%; transform: translate(-50%, -50%);"></div>
-                            <div style="position: absolute; left: 50%; top: 50%; width: 12px; height: 12px; background: white; border-radius: 50%; transform: translate(-50%, -50%);"></div>
-                            <div style="position: absolute; left: 0; top: 50%; width: 180px; height: 220px; border: 4px solid rgba(255,255,255,0.8); border-left: none; transform: translateY(-50%);"></div>
-                            <div style="position: absolute; right: 0; top: 50%; width: 180px; height: 220px; border: 4px solid rgba(255,255,255,0.8); border-right: none; transform: translateY(-50%);"></div>
-                            <div style="width: 50%; height: 100%; display: flex; align-items: center; justify-content: center; position: relative; padding-right: 40px;">${renderExportTeam(field.id + '-izq')}</div>
-                            <div style="width: 50%; height: 100%; display: flex; align-items: center; justify-content: center; position: relative; padding-left: 40px;">${renderExportTeam(field.id + '-der')}</div>
+                        <div style="height: 380px; position: relative; border-radius: 12px; border: 6px solid rgba(255,255,255,0.8); background-color: #4c962b; display: flex; overflow: hidden;">
+                            <div style="position: absolute; top: 0; bottom: 0; left: 0; width: 10%; background-color: #448924; z-index: 0;"></div>
+                            <div style="position: absolute; top: 0; bottom: 0; left: 20%; width: 10%; background-color: #448924; z-index: 0;"></div>
+                            <div style="position: absolute; top: 0; bottom: 0; left: 40%; width: 10%; background-color: #448924; z-index: 0;"></div>
+                            <div style="position: absolute; top: 0; bottom: 0; left: 60%; width: 10%; background-color: #448924; z-index: 0;"></div>
+                            <div style="position: absolute; top: 0; bottom: 0; left: 80%; width: 10%; background-color: #448924; z-index: 0;"></div>
+                            
+                            <div style="position: absolute; left: 50%; top: 0; bottom: 0; width: 6px; background: rgba(255,255,255,0.9); transform: translateX(-50%); z-index: 1;"></div>
+                            <div style="position: absolute; left: 50%; top: 50%; width: 160px; height: 160px; border: 6px solid rgba(255,255,255,0.9); border-radius: 50%; transform: translate(-50%, -50%); z-index: 1;"></div>
+                            <div style="position: absolute; left: 50%; top: 50%; width: 16px; height: 16px; background: white; border-radius: 50%; transform: translate(-50%, -50%); z-index: 1;"></div>
+                            <div style="position: absolute; left: 0; top: 50%; width: 180px; height: 220px; border: 6px solid rgba(255,255,255,0.9); border-left: none; transform: translateY(-50%); z-index: 1;"></div>
+                            <div style="position: absolute; right: 0; top: 50%; width: 180px; height: 220px; border: 6px solid rgba(255,255,255,0.9); border-right: none; transform: translateY(-50%); z-index: 1;"></div>
+                            
+                            <div style="width: 50%; height: 100%; position: relative; z-index: 5;">${renderExportTeam(field.id + '-izq')}</div>
+                            <div style="width: 50%; height: 100%; position: relative; z-index: 5;">${renderExportTeam(field.id + '-der')}</div>
                         </div>
                     </div>
                 `;
