@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ATM GK Planer | Asignación de Espacios</title>
     <!-- Tailwind CSS -->
-    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome -->
-    <link rel="stylesheet" href="[https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css](https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css)">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
-    <link href="[https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap](https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap)" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <!-- Librería para generar Imágenes (Exportar) -->
-    <script src="[https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js](https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js)"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <!-- Metadatos PWA y Favicon -->
     <meta name="theme-color" content="#CB3524">
@@ -91,11 +91,11 @@
 
         /* Ajustes específicos para el layout móvil para evitar que la cabecera desaparezca */
         #main-content-wrapper {
-            height: calc(100vh - 120px);
+            height: calc(100vh - 120px); /* Ajusta según la altura de tu cabecera + carrusel */
         }
         @media (min-width: 768px) {
             #main-content-wrapper {
-                height: calc(100vh - 120px);
+                height: calc(100vh - 120px); /* Ajuste desktop */
             }
         }
     </style>
@@ -133,7 +133,7 @@
         <div class="w-full px-3 md:px-4 h-14 md:h-16 flex items-center justify-between">
             <div class="flex items-center space-x-2 md:space-x-3 overflow-hidden w-full">
                 <div class="w-8 h-8 md:w-10 md:h-10 bg-white rounded-full flex items-center justify-center p-0.5 md:p-1 border-2 border-white/80 shadow-md shrink-0">
-                    <img src="ESCUDO%20ATM.png" alt="ATM Logo" class="w-full h-full object-contain" onerror="this.src='[https://upload.wikimedia.org/wikipedia/en/f/f4/Atletico_Madrid_2017_logo.svg](https://upload.wikimedia.org/wikipedia/en/f/f4/Atletico_Madrid_2017_logo.svg)'">
+                    <img src="ESCUDO%20ATM.png" alt="ATM Logo" class="w-full h-full object-contain" onerror="this.src='https://upload.wikimedia.org/wikipedia/en/f/f4/Atletico_Madrid_2017_logo.svg'">
                 </div>
                 <div class="truncate flex-1">
                     <h1 class="text-base md:text-xl font-bold tracking-wide truncate">ATM GK Planer</h1>
@@ -172,16 +172,16 @@
                     <span id="unassigned-count" class="bg-slate-200 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
                 </div>
                 
-                <!-- ÁREA DE EQUIPOS MODIFICADA (GRID PARA VER TODOS A LA VEZ EN MÓVIL) -->
+                <!-- ÁREA MODIFICADA: Ahora es una cuadrícula (grid) en móvil sin scroll horizontal -->
                 <div class="flex-1 overflow-y-auto no-scrollbar pb-2 pt-1 flex flex-col space-y-2 md:space-y-3 w-full" id="unassigned-teams-container">
                     
                     <!-- Marcador GK -->
-                    <div id="gk-marker" draggable="true" ondragstart="window.handleGKDragStart(event)" class="touch-draggable shrink-0 p-1.5 md:p-3 w-full rounded-lg border-2 border-atleti-red bg-red-50 text-atleti-red shadow-sm flex items-center justify-center cursor-grab transition-all border-dashed">
+                    <div id="gk-marker" draggable="true" ondragstart="window.handleGKDragStart(event)" class="touch-draggable shrink-0 p-2 md:p-3 w-full rounded-lg border-2 border-atleti-red bg-red-50 text-atleti-red shadow-sm flex items-center justify-center cursor-grab transition-all border-dashed">
                         <i class="fa-solid fa-mitten text-sm md:text-lg mr-1.5"></i>
                         <span class="font-bold text-[11px] md:text-sm leading-tight text-center pointer-events-none">Zona GK</span>
                     </div>
                     
-                    <!-- Equipos No Asignados (GRID) -->
+                    <!-- Equipos No Asignados (GRID DE 2 COLUMNAS EN MÓVIL) -->
                     <div id="unassigned-teams" class="grid grid-cols-2 md:grid-cols-1 gap-2 md:gap-3 w-full shrink-0" ondrop="window.handleDrop(event, 'unassigned')" ondragover="window.allowDrop(event)"></div>
                 </div>
             </div>
@@ -213,7 +213,7 @@
                 </div>
             </div>
 
-            <!-- Añadir Campo Extra -->
+            <!-- Añadir Campo Extra (Solo Desktop) -->
             <div class="hidden md:block p-4 border-t border-slate-200 bg-slate-50 shrink-0">
                 <h2 class="font-bold text-atleti-blue text-xs uppercase tracking-wide mb-2"><i class="fa-solid fa-plus mr-2"></i>Añadir Campo (F7)</h2>
                 <div class="flex space-x-2">
@@ -253,9 +253,9 @@
 
     <!-- Script Principal -->
     <script type="module">
-        import { initializeApp } from "[https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js](https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js)";
-        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "[https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js](https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js)";
-        import { getFirestore, doc, setDoc, onSnapshot, getDoc } from "[https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js](https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js)";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // CONFIGURACIÓN Y DATOS BASE
         const TEAMS = [
@@ -281,9 +281,9 @@
             assignments: {},   
             gkAssignments: {},
             customFields: [],
-            deletedFields: [], // Registro de campos eliminados
+            deletedFields: [], // AÑADIDO: Registro de campos borrados
             savedDays: new Set(),
-            viewMode: false
+            viewMode: false // Modo Coordinador
         };
 
         let db, auth, appId;
@@ -443,12 +443,13 @@
             state.viewMode = !state.viewMode;
             const sidebar = document.getElementById('main-sidebar');
             const toggleBtn = document.getElementById('view-mode-btn');
+            
             const section = document.querySelector('section');
 
             if (state.viewMode) {
                 sidebar.classList.add('hidden');
                 section.classList.remove('h-[65vh]');
-                section.classList.add('h-full');
+                section.classList.add('h-full'); // Ocupa todo al colapsar el menú
                 toggleBtn.innerHTML = '<i class="fa-solid fa-eye-slash text-base md:text-lg"></i>';
                 toggleBtn.classList.add('bg-atleti-blue', 'border-transparent');
                 toggleBtn.classList.remove('bg-white/20');
@@ -456,7 +457,7 @@
             } else {
                 sidebar.classList.remove('hidden');
                 section.classList.remove('h-full');
-                section.classList.add('h-[65vh]');
+                section.classList.add('h-[65vh]'); // Vuelve a su tamaño compartido en móvil
                 toggleBtn.innerHTML = '<i class="fa-solid fa-eye text-base md:text-lg"></i>';
                 toggleBtn.classList.remove('bg-atleti-blue', 'border-transparent');
                 toggleBtn.classList.add('bg-white/20');
@@ -525,11 +526,12 @@
             const container = document.getElementById('fields-container');
             container.innerHTML = ''; 
             
-            // Filtrar campos eliminados
+            // EXCLUYE LOS CAMPOS BORRADOS DEL BUCLE
             const baseFields = FIELDS.filter(f => !(state.deletedFields || []).includes(f.id));
             const allFields = [...baseFields, ...(state.customFields || [])];
 
             allFields.forEach(field => {
+                // AÑADIDO BOTÓN DE BORRAR PARA TODOS LOS CAMPOS
                 const deleteBtn = (!state.viewMode) ? `<button onclick="window.deleteField('${field.id}')" class="ml-3 text-red-300 hover:text-red-500 transition-colors" title="Eliminar campo"><i class="fa-solid fa-trash"></i></button>` : '';
 
                 const fieldHTML = `
@@ -623,7 +625,7 @@
                         targetZone.appendChild(card); targetZone.classList.add('bg-black/20');
                     }
                 } else {
-                    // SE USA W-FULL PARA QUE EN EL GRID OCUPEN EL ESPACIO CORRECTO
+                    // CAMBIO APLICADO: width 100% (w-full) para que funcione bien dentro del Grid en el móvil
                     card.className = `touch-draggable ${state.viewMode ? '' : 'cursor-grab group hover:border-atleti-red/50'} team-card p-1.5 md:p-3 w-full shrink-0 h-fit rounded-lg border border-slate-200 bg-white text-slate-700 shadow-sm flex flex-col md:flex-row items-center md:justify-between`;
                     card.innerHTML = `
                         <div class="flex flex-col md:flex-row items-center space-y-1 md:space-y-0 md:space-x-3 pointer-events-none w-full">
@@ -897,7 +899,7 @@
         };
 
         // ==========================================
-        // OTRAS FUNCIONES Y BORRAR CAMPO
+        // OTRAS FUNCIONES (AutoAssign, CustomFields, Export)
         // ==========================================
         window.triggerAutoAssign = () => {
             state.assignments = {}; state.gkAssignments = {}; 
@@ -918,7 +920,7 @@
             input.value = ''; renderApp(); saveAssignments();
         };
 
-        // NUEVA FUNCION: Borrar Campo
+        // FUNCIÓN AÑADIDA: BORRAR CAMPO (Predeterminado o Custom)
         window.deleteField = (id) => {
             if (id.startsWith('c-ext-')) {
                 state.customFields = (state.customFields || []).filter(f => f.id !== id);
@@ -967,7 +969,7 @@
         const dateInput = document.getElementById('current-date'); dateInput.value = state.date; updateDisplayDateUI();
         dateInput.addEventListener('change', (e) => { if(!e.target.value) return; state.date = e.target.value; updateDisplayDateUI(); listenToDate(state.date); });
 
-        // EXPORTAR DISEÑO A WHATSAPP: SISTEMA ROBUSTO
+        // EXPORTAR DISEÑO A WHATSAPP MODIFICADO: Bloques verdes en el CSS
         window.shareWhatsApp = async () => {
             window.showToast('Generando diseño profesional...', 'success');
             
@@ -1028,21 +1030,23 @@
                 htmlContent += `
                     <div style="background: #1e293b; border-radius: 24px; padding: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.3);">
                         <h3 style="font-size: 28px; font-weight: bold; color: white; text-align: center; margin: 0 0 25px 0;">📍 ${field.name}</h3>
-                        <div style="height: 380px; position: relative; border-radius: 12px; border: 6px solid rgba(255,255,255,0.8); background-color: #4c962b; display: flex; overflow: hidden;">
+                        <div style="height: 380px; position: relative; border-radius: 12px; border: 6px solid rgba(255,255,255,0.8); background-color: #4c962b; overflow: hidden; display: flex;">
+                            
+                            <!-- Franjas de Césped construidas con divs (a prueba de fallos de exportación) -->
                             <div style="position: absolute; top: 0; bottom: 0; left: 0; width: 10%; background-color: #448924; z-index: 0;"></div>
                             <div style="position: absolute; top: 0; bottom: 0; left: 20%; width: 10%; background-color: #448924; z-index: 0;"></div>
                             <div style="position: absolute; top: 0; bottom: 0; left: 40%; width: 10%; background-color: #448924; z-index: 0;"></div>
                             <div style="position: absolute; top: 0; bottom: 0; left: 60%; width: 10%; background-color: #448924; z-index: 0;"></div>
                             <div style="position: absolute; top: 0; bottom: 0; left: 80%; width: 10%; background-color: #448924; z-index: 0;"></div>
+
+                            <div style="position: absolute; left: 50%; top: 0; bottom: 0; width: 6px; background: rgba(255,255,255,0.8); transform: translateX(-50%); z-index: 1;"></div>
+                            <div style="position: absolute; left: 50%; top: 50%; width: 160px; height: 160px; border: 6px solid rgba(255,255,255,0.8); border-radius: 50%; transform: translate(-50%, -50%); z-index: 1;"></div>
+                            <div style="position: absolute; left: 50%; top: 50%; width: 12px; height: 12px; background: white; border-radius: 50%; transform: translate(-50%, -50%); z-index: 1;"></div>
+                            <div style="position: absolute; left: 0; top: 50%; width: 180px; height: 220px; border: 6px solid rgba(255,255,255,0.8); border-left: none; transform: translateY(-50%); z-index: 1;"></div>
+                            <div style="position: absolute; right: 0; top: 50%; width: 180px; height: 220px; border: 6px solid rgba(255,255,255,0.8); border-right: none; transform: translateY(-50%); z-index: 1;"></div>
                             
-                            <div style="position: absolute; left: 50%; top: 0; bottom: 0; width: 6px; background: rgba(255,255,255,0.9); transform: translateX(-50%); z-index: 1;"></div>
-                            <div style="position: absolute; left: 50%; top: 50%; width: 160px; height: 160px; border: 6px solid rgba(255,255,255,0.9); border-radius: 50%; transform: translate(-50%, -50%); z-index: 1;"></div>
-                            <div style="position: absolute; left: 50%; top: 50%; width: 16px; height: 16px; background: white; border-radius: 50%; transform: translate(-50%, -50%); z-index: 1;"></div>
-                            <div style="position: absolute; left: 0; top: 50%; width: 180px; height: 220px; border: 6px solid rgba(255,255,255,0.9); border-left: none; transform: translateY(-50%); z-index: 1;"></div>
-                            <div style="position: absolute; right: 0; top: 50%; width: 180px; height: 220px; border: 6px solid rgba(255,255,255,0.9); border-right: none; transform: translateY(-50%); z-index: 1;"></div>
-                            
-                            <div style="width: 50%; height: 100%; position: relative; z-index: 5;">${renderExportTeam(field.id + '-izq')}</div>
-                            <div style="width: 50%; height: 100%; position: relative; z-index: 5;">${renderExportTeam(field.id + '-der')}</div>
+                            <div style="width: 50%; height: 100%; display: flex; align-items: center; justify-content: center; position: relative; padding-right: 40px; z-index: 5;">${renderExportTeam(field.id + '-izq')}</div>
+                            <div style="width: 50%; height: 100%; display: flex; align-items: center; justify-content: center; position: relative; padding-left: 40px; z-index: 5;">${renderExportTeam(field.id + '-der')}</div>
                         </div>
                     </div>
                 `;
